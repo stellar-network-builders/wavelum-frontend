@@ -1,0 +1,23 @@
+flowchart TB
+    subgraph Browser
+        FE[Lumina Frontend<br/>Next.js App Router]
+        Wallet[Stellar Wallet<br/>Freighter / WalletConnect]
+    end
+
+    subgraph Backend
+        API[Lumina Backend API]
+        DB[(Database / Indexer)]
+    end
+
+    subgraph Stellar
+        RPC[Soroban RPC]
+        Contracts[(Soroban Contracts<br/>lumina-core)]
+    end
+
+    FE -->|read indexed data| API
+    FE -->|read contract state| RPC
+    FE -->|request connection / signature| Wallet
+    Wallet -->|signed transaction| FE
+    FE -->|submit signed tx| RPC
+    API --> DB
+    RPC --> Contracts

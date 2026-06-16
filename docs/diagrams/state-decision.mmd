@@ -1,0 +1,6 @@
+flowchart TD
+    Q{Does it live<br/>outside the browser?}
+    Q -->|Yes| RQ[React Query<br/>cache, refetch, invalidate]
+    Q -->|No| C{Shared across<br/>components?}
+    C -->|Yes| Z[Zustand store]
+    C -->|No| L[Local useState]

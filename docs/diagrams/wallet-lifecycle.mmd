@@ -1,0 +1,8 @@
+stateDiagram-v2
+    [*] --> Disconnected
+    Disconnected --> Connecting: user clicks Connect
+    Connecting --> Connected: wallet approves
+    Connecting --> Disconnected: user rejects
+    Connected --> Authenticated: SEP-10 challenge signed
+    Connected --> Disconnected: user disconnects
+    Authenticated --> Disconnected: session expires / network switch

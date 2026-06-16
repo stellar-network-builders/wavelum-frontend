@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant U as User
+    participant FE as Frontend
+    participant API as Backend API
+    participant RPC as Soroban RPC
+
+    U->>FE: Open dashboard
+    FE->>API: GET aggregated vesting data
+    API-->>FE: JSON response
+    FE->>RPC: Read live contract state
+    RPC-->>FE: Contract values
+    FE-->>U: Rendered dashboard
