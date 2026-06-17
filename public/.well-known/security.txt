@@ -1,0 +1,8 @@
+# Security Policy for Lumina Network
+# https://lumina.network
+
+Contact: mailto:security@lumina.network
+Expires: 2027-06-17T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://lumina.network/.well-known/security.txt
+Policy: https://lumina.network/security-policy
