@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 
 type Priority = 'polite' | 'assertive';
 
@@ -71,19 +71,22 @@ export function useSkipLink() {
   return { skipRef, handleSkip };
 }
 
+function getReducedMotion(): boolean {
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 export function useReducedMotion(): boolean {
-  const prefersReducedMotion = useRef(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(getReducedMotion);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    prefersReducedMotion.current = mq.matches;
-
     const handler = (e: MediaQueryListEvent) => {
-      prefersReducedMotion.current = e.matches;
+      setPrefersReducedMotion(e.matches);
     };
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
   }, []);
 
-  return prefersReducedMotion.current;
+  return prefersReducedMotion;
 }
