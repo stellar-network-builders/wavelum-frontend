@@ -18,6 +18,7 @@
     "react-dom": "19.2.3"
   },
   "devDependencies": {
+    "@axe-core/react": "^4.11.3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
