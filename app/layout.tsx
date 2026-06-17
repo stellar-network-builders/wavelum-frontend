@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { SkipLink } from '@/src/components/ui/SkipLink';
 import { AriaLiveRegion } from '@/src/components/ui/AriaLiveRegion';
+import { AxeCore } from '@/src/components/ui/AxeCore';
 import './globals.css';
 
 const geistSans = Geist({
@@ -31,6 +32,7 @@ export default function RootLayout({
       >
         <SkipLink />
         <AriaLiveRegion />
+        <AxeCore />
         <div id="main-content" role="main">
           {children}
         </div>

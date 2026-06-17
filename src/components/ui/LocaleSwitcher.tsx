@@ -3,7 +3,8 @@
 import { useLocale, useTranslations } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
-import { useTransition } from 'react';
+import { useTransition, useEffect } from 'react';
+import { useAnnounce } from '@/src/hooks/useAnnounce';
 
 export function LocaleSwitcher() {
   const t = useTranslations('LocaleSwitcher');
@@ -11,8 +12,11 @@ export function LocaleSwitcher() {
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const { announcePolite } = useAnnounce();
 
   function onSelectChange(nextLocale: string) {
+    const localeName = localeNames[nextLocale] ?? nextLocale;
+    announcePolite(`Language changed to ${localeName}`);
     startTransition(() => {
       router.replace({ pathname }, { locale: nextLocale });
     });
@@ -47,7 +51,8 @@ export function LocaleSwitcher() {
       {isPending && (
         <span
           className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-600"
-          aria-hidden="true"
+          aria-label={t('loading')}
+          role="status"
         />
       )}
     </div>
