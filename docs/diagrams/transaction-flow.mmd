@@ -1,0 +1,16 @@
+sequenceDiagram
+    participant FE as Frontend
+    participant RPC as Soroban RPC
+    participant W as Wallet
+
+    FE->>RPC: simulate(tx) to get footprint + fees
+    RPC-->>FE: prepared transaction
+    FE->>W: request signature
+    W-->>FE: signed transaction
+    FE->>RPC: sendTransaction(signed)
+    RPC-->>FE: pending hash
+    loop until final
+        FE->>RPC: getTransaction(hash)
+        RPC-->>FE: status (PENDING | SUCCESS | FAILED)
+    end
+    FE-->>FE: surface result to user
