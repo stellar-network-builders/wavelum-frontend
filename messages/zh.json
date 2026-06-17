@@ -1,0 +1,35 @@
+{
+  "HomePage": {
+    "title": "Lumina 网络",
+    "subtitle": "基于 Stellar Soroban 的区块链归属金库和代币流式传输",
+    "description": "要开始使用，请编辑 page.tsx 文件。",
+    "deployNow": "立即部署",
+    "documentation": "文档",
+    "templates": "模板",
+    "learningCenter": "学习中心"
+  },
+  "LocaleSwitcher": {
+    "label": "切换语言",
+    "locale": "{locale, select, en {English} ja {日本語} ko {한국어} zh {中文} other {Unknown}}"
+  },
+  "Common": {
+    "loading": "加载中...",
+    "error": "发生错误",
+    "retry": "重试",
+    "cancel": "取消",
+    "confirm": "确认",
+    "save": "保存",
+    "close": "关闭"
+  },
+  "Wallet": {
+    "connect": "连接钱包",
+    "disconnect": "断开连接",
+    "wrongNetwork": "请切换到 {network}",
+    "noWallet": "请安装 Freighter 钱包"
+  },
+  "Vesting": {
+    "totalVested": "总归属金额",
+    "availableToClaim": "可领取金额",
+    "nextVesting": "下一个归属日期"
+  }
+}

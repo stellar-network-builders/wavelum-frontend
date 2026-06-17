@@ -1,0 +1,35 @@
+{
+  "HomePage": {
+    "title": "Lumina Network",
+    "subtitle": "Blockchain-based vesting vault and token streaming on Stellar Soroban",
+    "description": "To get started, edit the page.tsx file.",
+    "deployNow": "Deploy Now",
+    "documentation": "Documentation",
+    "templates": "Templates",
+    "learningCenter": "Learning Center"
+  },
+  "LocaleSwitcher": {
+    "label": "Change language",
+    "locale": "{locale, select, en {English} ja {日本語} ko {한국어} zh {中文} other {Unknown}}"
+  },
+  "Common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Try Again",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "close": "Close"
+  },
+  "Wallet": {
+    "connect": "Connect Wallet",
+    "disconnect": "Disconnect",
+    "wrongNetwork": "Please switch to {network}",
+    "noWallet": "Please install Freighter wallet"
+  },
+  "Vesting": {
+    "totalVested": "Total Vested",
+    "availableToClaim": "Available to Claim",
+    "nextVesting": "Next Vesting Date"
+  }
+}

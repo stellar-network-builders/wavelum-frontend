@@ -1,0 +1,35 @@
+{
+  "HomePage": {
+    "title": "루미나 네트워크",
+    "subtitle": "Stellar Soroban 기반 블록체인 베스팅 볼트 및 토큰 스트리밍",
+    "description": "시작하려면 page.tsx 파일을 편집하세요.",
+    "deployNow": "지금 배포하기",
+    "documentation": "문서",
+    "templates": "템플릿",
+    "learningCenter": "러닝 센터"
+  },
+  "LocaleSwitcher": {
+    "label": "언어 변경",
+    "locale": "{locale, select, en {English} ja {日本語} ko {한국어} zh {中文} other {Unknown}}"
+  },
+  "Common": {
+    "loading": "로딩 중...",
+    "error": "오류가 발생했습니다",
+    "retry": "재시도",
+    "cancel": "취소",
+    "confirm": "확인",
+    "save": "저장",
+    "close": "닫기"
+  },
+  "Wallet": {
+    "connect": "지갑 연결",
+    "disconnect": "연결 해제",
+    "wrongNetwork": "{network}(으)로 전환해 주세요",
+    "noWallet": "Freighter 지갑을 설치해 주세요"
+  },
+  "Vesting": {
+    "totalVested": "총 베스팅",
+    "availableToClaim": "청구 가능",
+    "nextVesting": "다음 베스팅 날짜"
+  }
+}
