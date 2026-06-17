@@ -3,6 +3,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --focus-ring: #52525b;
+  --focus-ring-offset: 2px;
 }
 
 @theme inline {
@@ -16,7 +18,24 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --focus-ring: #a1a1aa;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
 body {

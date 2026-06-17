@@ -20,14 +20,16 @@ export default function Home() {
             Looking for a starting point or more instructions? Head over to{" "}
             <a
               href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              className="font-medium text-zinc-950 underline underline-offset-2 dark:text-zinc-50"
+              aria-label="Browse Vercel templates for Next.js projects"
             >
               Templates
             </a>{" "}
             or the{" "}
             <a
               href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              className="font-medium text-zinc-950 underline underline-offset-2 dark:text-zinc-50"
+              aria-label="Visit the Next.js learning center"
             >
               Learning
             </a>{" "}
@@ -36,10 +38,11 @@ export default function Home() {
         </div>
         <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
           <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] focus-visible:outline-offset-2 dark:hover:bg-[#ccc] md:w-[158px]"
             href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
             target="_blank"
             rel="noopener noreferrer"
+            aria-label="Deploy your Next.js app on Vercel"
           >
             <Image
               className="dark:invert"
@@ -55,6 +58,7 @@ export default function Home() {
             href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
             target="_blank"
             rel="noopener noreferrer"
+            aria-label="Read the Next.js documentation"
           >
             Documentation
           </a>
