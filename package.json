@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@axe-core/react": "^4.11.3",
-    "@next/bundle-analyzer": "16.1.6",
+    "@next/bundle-analyzer": "^16.2.9",
     "@playwright/test": "^1.49.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
