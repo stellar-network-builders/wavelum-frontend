@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 
 type Priority = 'polite' | 'assertive';
 
@@ -89,4 +89,122 @@ export function useReducedMotion(): boolean {
   }, []);
 
   return prefersReducedMotion;
+}
+
+type Direction = 'horizontal' | 'vertical';
+type Orientation = 'rows' | 'cells';
+
+type KeyboardConfig = {
+  direction?: Direction;
+  orientation?: Orientation;
+  columns?: number;
+  loop?: boolean;
+  onActivate?: (index: number) => void;
+};
+
+export function useKeyboardNavigation<T extends HTMLElement>(
+  itemCount: number,
+  config: KeyboardConfig = {},
+) {
+  const {
+    direction = 'vertical',
+    orientation = 'rows',
+    columns = 1,
+    loop = false,
+    onActivate,
+  } = config;
+
+  const [focusedIndex, setFocusedIndex] = useState<number>(-1);
+  const containerRef = useRef<T>(null);
+
+  const getItems = useCallback(() => {
+    if (!containerRef.current) return [];
+    return containerRef.current.querySelectorAll<HTMLElement>(
+      '[role="listitem"], [role="option"], [role="row"], [role="gridcell"], [tabindex]:not([tabindex="-1"])',
+    );
+  }, []);
+
+  const focusItem = useCallback((index: number) => {
+    const items = getItems();
+    if (items[index]) {
+      items[index].focus();
+      setFocusedIndex(index);
+    }
+  }, [getItems]);
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    const items = getItems();
+    if (items.length === 0) return;
+
+    let nextIndex = focusedIndex;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        if (direction === 'vertical') {
+          e.preventDefault();
+          nextIndex = focusedIndex + columns;
+        }
+        break;
+      case 'ArrowUp':
+        if (direction === 'vertical') {
+          e.preventDefault();
+          nextIndex = focusedIndex - columns;
+        }
+        break;
+      case 'ArrowRight':
+        if (direction === 'horizontal' || orientation === 'cells') {
+          e.preventDefault();
+          nextIndex = focusedIndex + 1;
+        }
+        break;
+      case 'ArrowLeft':
+        if (direction === 'horizontal' || orientation === 'cells') {
+          e.preventDefault();
+          nextIndex = focusedIndex - 1;
+        }
+        break;
+      case 'Home':
+        e.preventDefault();
+        nextIndex = 0;
+        break;
+      case 'End':
+        e.preventDefault();
+        nextIndex = itemCount - 1;
+        break;
+      case 'Enter':
+      case ' ':
+        if (focusedIndex >= 0) {
+          e.preventDefault();
+          onActivate?.(focusedIndex);
+        }
+        return;
+      default:
+        return;
+    }
+
+    if (loop) {
+      if (nextIndex < 0) nextIndex = itemCount - 1;
+      else if (nextIndex >= itemCount) nextIndex = 0;
+    } else {
+      nextIndex = Math.max(0, Math.min(nextIndex, itemCount - 1));
+    }
+
+    if (nextIndex !== focusedIndex) {
+      focusItem(nextIndex);
+    }
+  }, [focusedIndex, direction, orientation, columns, loop, itemCount, onActivate, getItems, focusItem]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    container.addEventListener('keydown', handleKeyDown);
+    return () => container.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
+  const setContainerRef = useCallback((el: T | null) => {
+    containerRef.current = el;
+  }, []);
+
+  return { containerRef: setContainerRef, focusedIndex, focusItem };
 }
