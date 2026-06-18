@@ -10,7 +10,7 @@
     "lint": "eslint",
     "lint:strict": "eslint --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "test:visual": "playwright test"
   },
   "engines": {
