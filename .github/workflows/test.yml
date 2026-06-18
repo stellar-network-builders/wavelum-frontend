@@ -1,4 +1,4 @@
-name: Vesting Dashboard Build
+name: CI
 
 on:
   push:
@@ -7,15 +7,108 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  quality:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-next-cache-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-next-cache-${{ hashFiles('**/package-lock.json') }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Strict Lint Check
+        run: npm run lint:strict
+
+      - name: Type Check
+        run: npm run typecheck
+
+      - name: Unit Tests
+        run: npm run test -- --coverage
+
+      - name: Build and Analyze
+        env:
+          ANALYZE: true
+        run: npm run build
+
+      - name: Bundle Size PR Comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            function getDirSize(dirPath) {
+              let size = 0;
+              if (!fs.existsSync(dirPath)) return size;
+              const files = fs.readdirSync(dirPath);
+              for (let i = 0; i < files.length; i++) {
+                const filePath = path.join(dirPath, files[i]);
+                const stats = fs.statSync(filePath);
+                if (stats.isFile()) size += stats.size;
+                else if (stats.isDirectory()) size += getDirSize(filePath);
+              }
+              return size;
+            }
+
+            const nextStaticDir = path.join(process.env.GITHUB_WORKSPACE, '.next', 'static');
+            const totalSizeKb = (getDirSize(nextStaticDir) / 1024).toFixed(2);
+            
+            const body = `📦 **Next.js Bundle Size Report (@next/bundle-analyzer)**\n\n- **Total Client-side Static Asset Size:** ${totalSizeKb} KB\n\n*Treemap analysis HTML outputs generated in workspace context.*`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+  visual-regression:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
           cache: 'npm'
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run build
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Next.js Server in Background
+        run: |
+          npm run build
+          npm run start &
+          npx wait-on http://localhost:3000
+
+      - name: Run Visual Regression Tests
+        run: npm run test:visual
