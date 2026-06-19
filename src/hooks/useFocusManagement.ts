@@ -2,6 +2,13 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 
+/**
+ * Hook that manages focus restoration and initial focus for toggleable
+ * UI surfaces like dropdowns, modals, and drawers.
+ *
+ * @param open - Whether the controlled surface is currently open.
+ * @returns Ref setters (`setTriggerRef`, `setContainerRef`) and `containerRef`.
+ */
 export function useFocusManagement(open: boolean) {
   const triggerRef = useRef<HTMLElement | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);

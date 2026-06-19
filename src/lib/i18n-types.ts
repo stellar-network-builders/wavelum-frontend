@@ -8,8 +8,19 @@ type PathInto<T, Prefix extends string = ''> = {
     : `${Prefix}${K}`;
 }[keyof T & string];
 
+/**
+ * A type-safe translation key derived from the English message catalog.
+ * Autocomplete will only suggest keys that actually exist.
+ */
 export type TranslationKey = PathInto<Messages>;
 
+/**
+ * Runtime type guard that checks whether a string is a valid translation key.
+ * Walks the English message tree and returns `true` if the dotted path exists.
+ *
+ * @param key - A dotted path, e.g. "Common.buttons.submit".
+ * @returns `true` if the key exists in the English message catalog.
+ */
 export function isTranslationKey(key: string): key is TranslationKey {
   const segments = key.split('.');
   let current: Record<string, unknown> = enMessages as Record<string, unknown>;
