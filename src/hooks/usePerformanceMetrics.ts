@@ -24,6 +24,13 @@ function sendToAnalytics(metric: { name: string; value: number; rating: string }
   }).catch(() => {});
 }
 
+/**
+ * Hook that starts collecting Core Web Vitals (CLS, INP, LCP) via the
+ * `web-vitals` library. Metrics are logged in development and posted to
+ * the `/api/vitals` endpoint for server-side collection.
+ *
+ * Call this once near the application root.
+ */
 export function usePerformanceMetrics() {
   useEffect(() => {
     onCLS(sendToAnalytics);

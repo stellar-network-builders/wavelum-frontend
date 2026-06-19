@@ -13,6 +13,18 @@ interface VirtualScrollResult {
   scrollTo: (index: number) => void;
 }
 
+/**
+ * Virtual scrolling hook for efficiently rendering large lists.
+ * Only items that fall within the visible viewport (plus overscan)
+ * are tracked, keeping DOM size and paint cost low.
+ *
+ * @param itemHeight - Fixed pixel height of a single list item.
+ * @param overscan   - Number of extra items to render above and below
+ *                     the visible region. Defaults to 5.
+ * @param totalItems - Total number of items in the logical list.
+ * @returns An object with a container callback ref, the visible slice
+ *          of items, the total scroll height, and a `scrollTo` helper.
+ */
 export function useVirtualScroll({
   itemHeight,
   overscan = 5,
