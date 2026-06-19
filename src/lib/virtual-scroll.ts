@@ -13,6 +13,13 @@ interface VirtualScrollResult {
   scrollTo: (index: number) => void;
 }
 
+/**
+ * Hook that virtualizes a scrollable list, rendering only the items visible
+ * in the viewport plus an overscan buffer.
+ *
+ * @param options - Configuration: `itemHeight`, `overscan` (default 5), and `totalItems`.
+ * @returns An object with `containerRef`, `visibleItems` (index + offsetY), `totalHeight`, and `scrollTo`.
+ */
 export function useVirtualScroll({
   itemHeight,
   overscan = 5,

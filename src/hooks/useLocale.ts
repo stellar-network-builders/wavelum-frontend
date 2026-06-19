@@ -5,6 +5,12 @@ import { useCallback } from 'react';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 
+/**
+ * Hook that exposes locale information and a locale-switching function.
+ * Wraps `next-intl` primitives and the i18n routing configuration.
+ *
+ * @returns An object with `locale`, `setLocale`, `t` (translator), `locales`, and `defaultLocale`.
+ */
 export function useLocale() {
   const locale = useNextIntlLocale();
   const pathname = usePathname();
