@@ -4,16 +4,19 @@ import { SkipLink } from '@/src/components/ui/SkipLink';
 import { AriaLiveRegion } from '@/src/components/ui/AriaLiveRegion';
 import { ErrorBoundary } from '@/src/components/errors/ErrorBoundary';
 import { ToastProvider } from '@/src/components/ui/Toast';
+import { WebVitals } from '@/src/components/ui/WebVitals';
 import './globals.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
+  display: 'swap',
 });
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -40,6 +43,12 @@ export default function RootLayout({
             </div>
           </ToastProvider>
         </ErrorBoundary>
+         <SkipLink />
+        <AriaLiveRegion />
+        <WebVitals />
+        <div id="main-content" role="main">
+          {children}
+        </div>
       </body>
     </html>
   );

@@ -1,0 +1,5 @@
+Contact: mailto:security@lumina.network
+Encryption: https://keybase.io/lumina
+Preferred-Languages: en
+Canonical: https://lumina.network/.well-known/security.txt
+Policy: https://lumina.network/security-policy
