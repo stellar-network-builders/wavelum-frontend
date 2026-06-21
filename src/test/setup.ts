@@ -77,6 +77,15 @@ beforeAll(() => {
     },
   );
 
+  // requestIdleCallback mock (used by @axe-core/react)
+  if (typeof window.requestIdleCallback !== 'function') {
+    Object.defineProperty(window, 'requestIdleCallback', {
+      writable: true,
+      value: (cb: IdleRequestCallback) =>
+        setTimeout(() => cb({ didTimeout: false, timeRemaining: () => 50 }), 0),
+    });
+  }
+
   // Performance API mocks
   if (!window.performance.mark) {
     Object.defineProperty(window.performance, 'mark', {
