@@ -2,6 +2,12 @@ import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
 import { afterEach, beforeAll, afterAll, vi } from 'vitest';
 
+// Prevent @axe-core/react from patching React.createElement in jsdom
+// (createElement is read-only and would throw "Cannot redefine property")
+vi.mock('@axe-core/react', () => ({
+  default: vi.fn(),
+}));
+
 afterEach(() => {
   cleanup();
 });

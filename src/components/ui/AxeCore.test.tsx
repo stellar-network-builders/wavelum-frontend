@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, waitFor } from '@/src/test/utils';
+import { render } from '@/src/test/utils';
 import { AxeCore } from './AxeCore';
 
 // Mock @axe-core/react to prevent it from patching React.createElement
@@ -15,31 +15,25 @@ describe('AxeCore', () => {
   });
 
   it('renders nothing (returns null)', () => {
-    const { container } = render(<AxeCore />);
-    expect(container.innerHTML).toBe('');
-  });
-
-  it('does not attempt dynamic import in production mode', () => {
     vi.stubEnv('NODE_ENV', 'production');
-
-    // The component checks process.env.NODE_ENV and returns early in production.
-    // It should render null without triggering any dynamic imports.
     const { container } = render(<AxeCore />);
     expect(container.innerHTML).toBe('');
   });
 
-  it('attempts to load axe in development mode without crashing', async () => {
-    vi.stubEnv('NODE_ENV', 'development');
+  it('returns null in production mode without attempting dynamic imports', () => {
+    vi.stubEnv('NODE_ENV', 'production');
+    const { container } = render(<AxeCore />);
+    // The component checks process.env.NODE_ENV === 'development' and returns early.
+    // In production, it simply renders null without any side effects.
+    expect(container.innerHTML).toBe('');
+  });
 
+  it('does not crash but returns null in development mode', async () => {
+    vi.stubEnv('NODE_ENV', 'development');
     // The component attempts dynamic imports in dev mode.
-    // @axe-core/react is mocked at the module level, so the dynamic import
-    // resolves to the mock without trying to patch React.
+    // @axe-core/react is mocked at module level; the dynamic import resolves
+    // to the mock and the component renders null regardless.
     const { container } = render(<AxeCore />);
     expect(container.innerHTML).toBe('');
-
-    // Wait for the async effect to settle
-    await waitFor(() => {
-      expect(true).toBe(true); // Reaching here means no crash
-    });
   });
 });
