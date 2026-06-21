@@ -27,5 +27,6 @@ export function isTranslationKey(key: string): key is TranslationKey {
     current = current[segment] as Record<string, unknown>;
   }
 
-  return true;
+  // The resolved value must be a string leaf, not an intermediate object.
+  return typeof current === 'string';
 }

@@ -1,24 +1,40 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 
+// More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
-
 import { playwright } from '@vitest/browser-playwright';
 
 const dirname =
   typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
-// More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   test: {
+    // Define BOTH projects here so unit tests and storybook tests run side-by-side
     projects: [
       {
-        extends: true,
+        resolve: {
+          alias: {
+            '@': path.resolve(dirname, '.'),
+          },
+        },
+        test: {
+          name: 'unit',
+          environment: 'jsdom',
+          setupFiles: ['./src/test/setup.ts'],
+          globals: true,
+          exclude: [...configDefaults.exclude, 'e2e/**'],
+        },
+      },
+      {
+        resolve: {
+          alias: {
+            '@': path.resolve(dirname, '.'),
+          },
+        },
         plugins: [
-          // The plugin will run tests for the stories defined in your Storybook config
-          // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
           storybookTest({ configDir: path.join(dirname, '.storybook') }),
         ],
         test: {
@@ -32,5 +48,25 @@ export default defineConfig({
         },
       },
     ],
+
+    // Shared coverage config
+    coverage: {
+      enabled: true,
+      provider: 'v8',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'src/test/**',
+        'src/**/*.test.{ts,tsx}',
+        'src/**/*.spec.{ts,tsx}',
+        'src/**/*.stories.{ts,tsx}',
+      ],
+      reporter: ['text', 'lcov', 'html'],
+      thresholds: {
+        branches: 50,
+        functions: 50,
+        lines: 50,
+        statements: 50,
+      },
+    },
   },
 });
