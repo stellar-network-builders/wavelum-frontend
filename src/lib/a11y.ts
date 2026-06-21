@@ -1,9 +1,16 @@
 'use client';
 
-import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 
 type Priority = 'polite' | 'assertive';
 
+/**
+ * Dispatch an accessibility announcement to the screen-reader live region.
+ * The message is rendered as a hidden DOM node and removed after 3 seconds.
+ *
+ * @param message  - Text that should be read by assistive technology.
+ * @param priority - "polite" waits for silence; "assertive" interrupts immediately.
+ */
 export function announce(message: string, priority: Priority = 'polite') {
   const region = document.getElementById('a11y-announcements');
   if (region) {
@@ -17,6 +24,13 @@ export function announce(message: string, priority: Priority = 'polite') {
   }
 }
 
+/**
+ * Trap keyboard focus inside a container element (e.g. a modal or drawer).
+ * Tab and Shift+Tab cycle through focusable children without escaping.
+ *
+ * @param container - The DOM element that should contain focus.
+ * @returns A cleanup function that removes the key-down listener.
+ */
 export function focusTrap(container: HTMLElement | null) {
   if (!container) return () => {};
 
@@ -49,6 +63,12 @@ export function focusTrap(container: HTMLElement | null) {
   return () => document.removeEventListener('keydown', handleKeyDown);
 }
 
+/**
+ * Hook for a skip-to-content link that moves focus to the `<main>`
+ * landmark on activation, making the page immediately keyboard-accessible.
+ *
+ * @returns A ref for the skip link anchor and a cross-event handler.
+ */
 export function useSkipLink() {
   const skipRef = useRef<HTMLAnchorElement>(null);
 
@@ -76,6 +96,11 @@ function getReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
+/**
+ * Reactively read the user's `prefers-reduced-motion` OS setting.
+ *
+ * @returns `true` when the user has requested reduced motion, `false` otherwise.
+ */
 export function useReducedMotion(): boolean {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(getReducedMotion);
 
@@ -102,6 +127,17 @@ type KeyboardConfig = {
   onActivate?: (index: number) => void;
 };
 
+/**
+ * Hook for arrow-key navigation within a container of focusable items.
+ * Supports horizontal/vertical modes, row/cell orientations, looping,
+ * and an activation callback for Enter/Space.
+ *
+ * @typeParam T - The element type that receives the container ref.
+ * @param itemCount - Total number of navigable items.
+ * @param config    - Direction, orientation, columns, loop, and onActivate.
+ * @returns The container callback ref, current focused index, and a
+ *          programmatic `focusItem` helper.
+ */
 export function useKeyboardNavigation<T extends HTMLElement>(
   itemCount: number,
   config: KeyboardConfig = {},

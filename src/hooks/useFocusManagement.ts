@@ -2,6 +2,14 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 
+/**
+ * Manage focus when a dialog, popover, or dropdown opens and closes.
+ * Saves the previously focused element, moves focus into the container
+ * on open, and restores it on close.
+ *
+ * @param open - Whether the controlled panel is visible.
+ * @returns Callback refs for the trigger and container elements.
+ */
 export function useFocusManagement(open: boolean) {
   const triggerRef = useRef<HTMLElement | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
