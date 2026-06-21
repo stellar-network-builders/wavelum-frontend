@@ -1,46 +1,54 @@
 import { test, expect } from '@playwright/test';
 
+/**
+ * Homepage E2E Tests
+ *
+ * Core page rendering and accessibility for the default locale (/en).
+ * Comprehensive locale switching, metadata, and responsive tests are in
+ * dashboard-navigation.spec.ts. Wallet integration tests are in wallet-connect.spec.ts.
+ */
 describe('Homepage', () => {
-  test('should display the application title', async ({ page }) => {
+  test('should display the Lumina Network title', async ({ page }) => {
     await page.goto('/');
 
     // The root page redirects to /en (default locale)
     await page.waitForURL(/\/en/);
 
-    const title = page.locator('h1');
+    const title = page.getByRole('heading', { level: 1 });
     await expect(title).toBeVisible();
-    expect(await title.textContent()).toBeTruthy();
+    await expect(title).toHaveText('Lumina Network');
   });
 
-  test('should have a skip-to-content link', async ({ page }) => {
+  test('should have a skip-to-content link for keyboard users', async ({ page }) => {
     await page.goto('/en');
     const skipLink = page.locator('a[href="#main-content"]');
     await expect(skipLink).toBeAttached();
+
+    // Should be the first focusable element
+    await page.keyboard.press('Tab');
+    await expect(skipLink).toBeFocused();
   });
 
-  test('should show the locale switcher', async ({ page }) => {
+  test('should show the locale switcher dropdown', async ({ page }) => {
     await page.goto('/en');
-    const select = page.locator('#locale-switcher');
+    const select = page.getByLabel('Change language');
     await expect(select).toBeAttached();
   });
-});
 
-describe('LocaleSwitcher', () => {
-  test('should navigate when changing language', async ({ page }) => {
+  test('should switch language and show translated title', async ({ page }) => {
     await page.goto('/en');
-    const select = page.locator('#locale-switcher');
-    await expect(select).toBeAttached();
+    const select = page.getByLabel('Change language');
     await select.selectOption('ja');
     await page.waitForURL(/\/ja/);
-    const title = page.locator('h1');
-    // The title should now be in Japanese
+
+    const title = page.getByRole('heading', { level: 1 });
     await expect(title).toBeVisible();
-    expect(await title.textContent()).toContain('ルミナネットワーク');
+    await expect(title).toHaveText('ルミナネットワーク');
   });
 });
 
 describe('Accessibility', () => {
-  test('should have a live region for announcements', async ({ page }) => {
+  test('should have a live region for screen-reader announcements', async ({ page }) => {
     await page.goto('/en');
     const liveRegion = page.locator('#a11y-announcements');
     await expect(liveRegion).toBeAttached();
