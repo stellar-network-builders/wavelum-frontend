@@ -19,6 +19,16 @@ export function sanitizeAddress(address: string): string {
  */
 export function validateRedirectUrl(url: string): boolean {
   if (!url) return false;
+  // Only allow absolute HTTP(S) URLs, root-relative paths, or explicit relative paths.
+  if (
+    !url.startsWith('http://') &&
+    !url.startsWith('https://') &&
+    !url.startsWith('/') &&
+    !url.startsWith('./') &&
+    !url.startsWith('../')
+  ) {
+    return false;
+  }
   try {
     const parsed = new URL(url, window.location.origin);
     return parsed.origin === window.location.origin;
