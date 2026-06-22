@@ -46,6 +46,9 @@ jobs:
       - name: Type Check
         run: npm run typecheck
 
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
       - name: Unit Tests
         run: npm run test -- --coverage
 
@@ -117,18 +120,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-          
+
       - run: npm ci
-      
+
       - name: Build for aXe audit
         run: npm run build
-        
+
       - name: Check Tailwind color contrast
         run: |
           npx @accessibility/contrast --config '{
