@@ -10,6 +10,14 @@ type PathInto<T, Prefix extends string = ''> = {
 
 export type TranslationKey = PathInto<Messages>;
 
+/**
+ * Type guard that checks whether a string is a valid translation key.
+ * Walks the English messages tree to verify each segment exists.
+ *
+ * @param key - A dot-delimited key such as "home.title".
+ * @returns `true` when the key resolves to a leaf in the English messages,
+ *          narrowing the type to `TranslationKey`.
+ */
 export function isTranslationKey(key: string): key is TranslationKey {
   const segments = key.split('.');
   let current: Record<string, unknown> = enMessages as Record<string, unknown>;

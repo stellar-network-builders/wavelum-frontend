@@ -22,6 +22,37 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 /**
  * Toast provider component that manages toast notifications.
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  type ReactNode,
+} from 'react';
+import * as ToastPrimitive from '@radix-ui/react-toast';
+
+type ToastVariant = 'success' | 'error' | 'warning' | 'info';
+
+type Toast = {
+  id: string;
+  title: string;
+  description?: string;
+  variant: ToastVariant;
+  duration?: number;
+};
+
+type ToastContextType = {
+  /** Show a toast notification. */
+  toast: (params: Omit<Toast, 'id'>) => void;
+  /** Dismiss a specific toast by id. */
+  dismiss: (id: string) => void;
+};
+
+const ToastContext = createContext<ToastContextType | null>(null);
+
+/**
+ * Provider that wraps the app to enable toast notifications.
+ * Include one <ToastProvider> near the root of the app.
  */
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -51,6 +82,26 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <ToastContext.Provider value={{ toasts, addToast, removeToast, clearToasts }}>
       {children}
       <ToastContainer />
+  const addToast = useCallback((params: Omit<Toast, 'id'>) => {
+    const id = crypto.randomUUID();
+    setToasts((prev) => [...prev, { ...params, id }]);
+  }, []);
+
+  const dismiss = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  return (
+    <ToastContext.Provider value={{ toast: addToast, dismiss }}>
+      <ToastPrimitive.Provider swipeDirection="right">
+        {children}
+
+        {toasts.map((t) => (
+          <ToastItem key={t.id} toast={t} onDismiss={() => dismiss(t.id)} />
+        ))}
+
+        <ToastPrimitive.Viewport className="fixed bottom-0 right-0 z-[100] flex max-w-sm flex-col gap-2 p-4 outline-none" />
+      </ToastPrimitive.Provider>
     </ToastContext.Provider>
   );
 }
@@ -148,5 +199,129 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
         </svg>
       </button>
     </div>
+  );
+}
+ * Hook to trigger toast notifications.
+ *
+ * @example
+ * const { toast } = useToast();
+ * toast({ title: 'Success!', variant: 'success' });
+ */
+export function useToast() {
+  const ctx = useContext(ToastContext);
+  if (!ctx) {
+    throw new Error('useToast must be used within a <ToastProvider>');
+  }
+  return ctx;
+}
+
+// ---------------------------------------------------------------------------
+// Internal toast item
+// ---------------------------------------------------------------------------
+
+function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }) {
+  const variantStyles: Record<ToastVariant, string> = {
+    success:
+      'border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950',
+    error:
+      'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950',
+    warning:
+      'border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950',
+    info: 'border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950',
+  };
+
+  const iconMap: Record<ToastVariant, ReactNode> = {
+    success: <SuccessIcon />,
+    error: <ErrorIcon />,
+    warning: <WarningIcon />,
+    info: <InfoIcon />,
+  };
+
+  return (
+    <ToastPrimitive.Root
+      duration={toast.duration ?? 5000}
+      onOpenChange={(open) => {
+        if (!open) onDismiss();
+      }}
+      className={`flex items-start gap-3 rounded-lg border p-4 shadow-lg backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-right-full ${variantStyles[toast.variant]}`}
+    >
+      <span className="mt-0.5 shrink-0">{iconMap[toast.variant]}</span>
+      <div className="flex-1 min-w-0">
+        <ToastPrimitive.Title className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+          {toast.title}
+        </ToastPrimitive.Title>
+        {toast.description && (
+          <ToastPrimitive.Description className="mt-0.5 text-xs text-zinc-600 dark:text-zinc-400">
+            {toast.description}
+          </ToastPrimitive.Description>
+        )}
+      </div>
+      <ToastPrimitive.Close className="shrink-0 rounded p-0.5 text-zinc-400 transition-colors hover:text-zinc-600 dark:hover:text-zinc-300">
+        <CloseIcon />
+      </ToastPrimitive.Close>
+    </ToastPrimitive.Root>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Icons
+// ---------------------------------------------------------------------------
+
+function SuccessIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <circle cx="8" cy="8" r="7" className="fill-emerald-500" />
+      <path
+        d="M5.5 8l2 2 3-3.5"
+        stroke="white"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ErrorIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <circle cx="8" cy="8" r="7" className="fill-red-500" />
+      <path d="M10 6l-4 4M6 6l4 4" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function WarningIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M8 1.5l6.5 11H1.5L8 1.5z"
+        className="fill-amber-500 stroke-amber-500"
+        strokeWidth="1"
+      />
+      <path d="M8 6v2.5M8 11v.01" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function InfoIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <circle cx="8" cy="8" r="7" className="fill-blue-500" />
+      <path d="M8 7v4M8 5.5v.01" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+      <path
+        d="M9 3L3 9M3 3l6 6"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
   );
 }
