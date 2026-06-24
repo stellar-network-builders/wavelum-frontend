@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useMemo, type ReactNode } from 'react';
+import { CaretUp, CaretDown, ArrowsDownUp } from '@phosphor-icons/react';
+import { useVirtualizer } from '@tanstack/react-virtual';
+import { useState, useMemo, useCallback, useRef, memo, type ReactNode, type ReactElement } from 'react';
 
 type SortDirection = 'asc' | 'desc' | null;
 
@@ -68,7 +70,7 @@ export function Table<T extends Record<string, unknown>>({
   const [sortColumn, setSortColumn] = useState<string | null>(defaultSortColumn ?? null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(defaultSortDirection);
 
-  const handleSort = (columnKey: string) => {
+  const handleSort = useCallback((columnKey: string) => {
     const column = columns.find((c) => c.key === columnKey);
     if (!column?.sortable) return;
 
@@ -82,7 +84,7 @@ export function Table<T extends Record<string, unknown>>({
     setSortColumn(newDir ? columnKey : null);
     setSortDirection(newDir);
     onSortChange?.(columnKey, newDir);
-  };
+  }, [columns, sortColumn, sortDirection, onSortChange]);
 
   // Client-side sorting when callbacks aren't used
   const sortedData = useMemo(() => {
@@ -121,6 +123,25 @@ export function Table<T extends Record<string, unknown>>({
   const currentPage = page ?? 1;
 
   // ------------------------------------------------------------------
+  // Virtual Scrolling Setup
+  // ------------------------------------------------------------------
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  const virtualizer = useVirtualizer({
+    count: paginatedData.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 44, // approx row height
+    overscan: 5,
+  });
+
+  const virtualItems = virtualizer.getVirtualItems();
+
+  const paddingTop = virtualItems.length > 0 ? virtualItems[0].start : 0;
+  const paddingBottom = virtualItems.length > 0
+    ? virtualizer.getTotalSize() - virtualItems[virtualItems.length - 1].end
+    : 0;
+
+  // ------------------------------------------------------------------
   // Empty state
   // ------------------------------------------------------------------
   if (!loading && data.length === 0 && emptyState) {
@@ -136,10 +157,10 @@ export function Table<T extends Record<string, unknown>>({
   // ------------------------------------------------------------------
   return (
     <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
-          <thead>
-            <tr className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50">
+      <div className="overflow-auto max-h-[600px]" ref={parentRef}>
+        <table className="w-full text-left text-sm relative">
+          <thead className="sticky top-0 z-10 bg-zinc-50 dark:bg-zinc-900">
+            <tr className="border-b border-zinc-200 dark:border-zinc-800">
               {columns.map((col) => (
                 <th
                   key={col.key}
@@ -187,23 +208,30 @@ export function Table<T extends Record<string, unknown>>({
                 </td>
               </tr>
             ) : (
-              paginatedData.map((row, rowIdx) => (
-                <tr
-                  key={rowIdx}
-                  className="transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
-                >
-                  {columns.map((col) => (
-                    <td
-                      key={col.key}
-                      className={`px-4 py-3 text-zinc-700 dark:text-zinc-300 ${col.cellClassName ?? ''}`}
-                    >
-                      {col.render
-                        ? col.render(row)
-                        : (row[col.key] as ReactNode) ?? '—'}
-                    </td>
-                  ))}
-                </tr>
-              ))
+              <>
+                {paddingTop > 0 && (
+                  <tr>
+                    <td style={{ height: paddingTop }} colSpan={columns.length} />
+                  </tr>
+                )}
+                {virtualItems.map((virtualRow) => {
+                  const row = paginatedData[virtualRow.index];
+                  return (
+                    <MemoizedTableRow
+                      key={virtualRow.key}
+                      row={row}
+                      columns={columns}
+                      dataIndex={virtualRow.index}
+                      measureRef={virtualizer.measureElement}
+                    />
+                  );
+                })}
+                {paddingBottom > 0 && (
+                  <tr>
+                    <td style={{ height: paddingBottom }} colSpan={columns.length} />
+                  </tr>
+                )}
+              </>
             )}
           </tbody>
         </table>
@@ -274,34 +302,47 @@ export function Table<T extends Record<string, unknown>>({
 // Internal helpers
 // ---------------------------------------------------------------------------
 
-function SortIcon({ direction }: { direction: SortDirection }) {
+const MemoizedTableRow = memo(function MemoizedTableRow<T>({
+  row,
+  columns,
+  dataIndex,
+  measureRef,
+}: {
+  row: T;
+  columns: Column<T>[];
+  dataIndex: number;
+  measureRef: (node: Element | null) => void;
+}) {
   return (
-    <svg
-      width="10"
-      height="14"
-      viewBox="0 0 10 14"
-      fill="none"
-      aria-hidden="true"
-      className="text-zinc-400"
+    <tr
+      ref={measureRef}
+      data-index={dataIndex}
+      className="transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
     >
-      <path
-        d="M5 0v10M2 4l3-4 3 4"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={direction === 'asc' ? 'text-zinc-900 dark:text-zinc-50' : ''}
-      />
-      <path
-        d="M5 14V4M2 10l3 4 3-4"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={direction === 'desc' ? 'text-zinc-900 dark:text-zinc-50' : ''}
-      />
-    </svg>
+      {columns.map((col) => (
+        <td
+          key={col.key}
+          className={`px-4 py-3 text-zinc-700 dark:text-zinc-300 ${col.cellClassName ?? ''}`}
+        >
+          {col.render
+            ? col.render(row)
+            : (row[col.key as keyof T] as ReactNode) ?? '—'}
+        </td>
+      ))}
+    </tr>
   );
+}) as <T>(props: {
+  row: T;
+  columns: Column<T>[];
+  dataIndex: number;
+  measureRef: (node: Element | null) => void;
+}) => ReactElement;
+
+
+function SortIcon({ direction }: { direction: SortDirection }) {
+  if (direction === 'asc') return <CaretUp className="text-zinc-900 dark:text-zinc-50 h-3 w-3" weight="bold" />;
+  if (direction === 'desc') return <CaretDown className="text-zinc-900 dark:text-zinc-50 h-3 w-3" weight="bold" />;
+  return <ArrowsDownUp className="text-zinc-400 h-3 w-3" />;
 }
 
 function PageButton({

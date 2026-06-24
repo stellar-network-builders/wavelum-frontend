@@ -1,5 +1,7 @@
 'use client';
 
+import { CheckCircle, XCircle, Warning, Info, X } from '@phosphor-icons/react';
+import * as ToastPrimitive from '@radix-ui/react-toast';
 import {
   createContext,
   useContext,
@@ -7,7 +9,6 @@ import {
   useCallback,
   type ReactNode,
 } from 'react';
-import * as ToastPrimitive from '@radix-ui/react-toast';
 
 type ToastVariant = 'success' | 'error' | 'warning' | 'info';
 
@@ -127,60 +128,21 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
 // ---------------------------------------------------------------------------
 
 function SuccessIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <circle cx="8" cy="8" r="7" className="fill-emerald-500" />
-      <path
-        d="M5.5 8l2 2 3-3.5"
-        stroke="white"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+  return <CheckCircle weight="fill" className="h-4 w-4 text-emerald-500" />;
 }
 
 function ErrorIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <circle cx="8" cy="8" r="7" className="fill-red-500" />
-      <path d="M10 6l-4 4M6 6l4 4" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
+  return <XCircle weight="fill" className="h-4 w-4 text-red-500" />;
 }
 
 function WarningIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path
-        d="M8 1.5l6.5 11H1.5L8 1.5z"
-        className="fill-amber-500 stroke-amber-500"
-        strokeWidth="1"
-      />
-      <path d="M8 6v2.5M8 11v.01" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
+  return <Warning weight="fill" className="h-4 w-4 text-amber-500" />;
 }
 
 function InfoIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <circle cx="8" cy="8" r="7" className="fill-blue-500" />
-      <path d="M8 7v4M8 5.5v.01" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
+  return <Info weight="fill" className="h-4 w-4 text-blue-500" />;
 }
 
 function CloseIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-      <path
-        d="M9 3L3 9M3 3l6 6"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
+  return <X weight="bold" className="h-3 w-3" />;
 }

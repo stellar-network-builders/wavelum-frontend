@@ -20,7 +20,31 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "save": "Save",
-    "close": "Close"
+    "close": "Close",
+    "refresh": "Refresh Page",
+    "reportIssue": "Report Issue",
+    "pageNotFound": "Page not found",
+    "pageNotFoundDescription": "The page you are looking for does not exist or has been moved.",
+    "goHome": "Go Home",
+    "errorDescription": "An unexpected error occurred. You can try again, refresh the page, or report the issue.",
+    "criticalError": "Critical Error",
+    "criticalErrorDescription": "A critical error occurred. Please try refreshing the page."
+  },
+  "Errors": {
+    "sessionExpired": "Your session has expired. Please reconnect your wallet.",
+    "accessDenied": "You do not have permission to perform this action.",
+    "notFound": "The requested resource was not found.",
+    "rateLimited": "Too many requests. Please wait a moment and try again.",
+    "serverError": "Something went wrong on our end. Please try again later.",
+    "serviceUnavailable": "The service is temporarily unavailable. Please try again later.",
+    "networkError": "Unable to reach the server. Check your connection.",
+    "walletNotDetected": "Freighter wallet not detected. Please install Freighter.",
+    "walletRejected": "The wallet request was rejected by the user.",
+    "walletDisconnected": "Your wallet has been disconnected.",
+    "wrongNetwork": "Please switch to the correct Stellar network in your wallet.",
+    "transactionTooLarge": "Transaction fee exceeds budget. Try with smaller amounts.",
+    "contractError": "The smart contract returned an error. Please try again.",
+    "transactionTimeout": "The transaction timed out. Please try again."
   },
   "Wallet": {
     "connect": "Connect Wallet",
