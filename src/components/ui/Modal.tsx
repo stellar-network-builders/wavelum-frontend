@@ -2,6 +2,7 @@
 
 import { type ReactNode } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
+import { X } from '@phosphor-icons/react';
 
 type ModalProps = {
   /** Control open state externally. */
@@ -77,15 +78,5 @@ export function Modal({
 }
 
 function CloseIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path
-        d="M12 4L4 12M4 4l8 8"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+  return <X className="h-4 w-4" weight="bold" />;
 }
