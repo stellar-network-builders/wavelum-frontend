@@ -1,7 +1,7 @@
 'use client';
 
-import { type ReactNode, useRef, useState, useEffect, useCallback } from 'react';
 import * as TabsPrimitive from '@radix-ui/react-tabs';
+import { type ReactNode, useRef, useState, useEffect, useCallback } from 'react';
 
 type Tab = {
   value: string;

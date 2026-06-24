@@ -1,8 +1,8 @@
 'use client';
 
-import { type ReactNode, useId, useState, useDeferredValue, useMemo } from 'react';
-import * as RadixSelect from '@radix-ui/react-select';
 import { CaretDown } from '@phosphor-icons/react';
+import * as RadixSelect from '@radix-ui/react-select';
+import { type ReactNode, useId, useState, useDeferredValue, useMemo } from 'react';
 
 type SelectOption = {
   value: string;

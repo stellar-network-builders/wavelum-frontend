@@ -1,6 +1,7 @@
 'use client';
 
 import { forwardRef, type InputHTMLAttributes, type ReactNode, useId } from 'react';
+
 import { inputBaseClasses, inputErrorClasses } from './styles';
 
 type InputProps = InputHTMLAttributes<HTMLInputElement> & {

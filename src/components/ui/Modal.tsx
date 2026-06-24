@@ -1,8 +1,8 @@
 'use client';
 
-import { type ReactNode } from 'react';
-import * as Dialog from '@radix-ui/react-dialog';
 import { X } from '@phosphor-icons/react';
+import * as Dialog from '@radix-ui/react-dialog';
+import { type ReactNode } from 'react';
 
 type ModalProps = {
   /** Control open state externally. */
