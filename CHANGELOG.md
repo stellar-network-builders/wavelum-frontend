@@ -13,6 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `.env.example` template listing all `NEXT_PUBLIC_*` configuration variables.
 - Expanded `README.md` with quick start, environment variable table, scripts, and project structure.
 - `CHANGELOG.md` following Keep a Changelog.
+- Global React error boundary (`ErrorBoundary`) that catches render crashes and shows a branded recovery UI with "Try Again", "Refresh Page", and "Report Issue" buttons.
+- Typed error hierarchy (`AppError`, `ApiError`, `WalletError`, `SorobanError`) in `src/lib/errors.ts` with severity levels for routing errors to the correct UX treatment.
+- `useErrorToast` hook that automatically shows toast notifications for specific error types (API errors, wallet errors, Soroban contract errors).
+- Sentry integration with client/server/edge configuration files for production error tracking, performance monitoring, and session replay.
+- `app/global-error.tsx` for Next.js App Router global error handling with Sentry error capture.
+- `app/not-found.tsx` and `app/error.tsx` pages for 404 and generic errors.
+- `app/[locale]/error.tsx` localized error page with translation support.
+- Error-related translation messages added to all locale files (en, ja, ko, zh).
+- `https://*.sentry.io` added to CSP `connect-src` directive.
 
 ### Changed
 
