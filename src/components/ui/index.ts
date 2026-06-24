@@ -7,6 +7,12 @@ export { Select } from './Select';
 export { ToastProvider, useToast } from './Toast';
 export { Tabs } from './Tabs';
 export { Table } from './Table';
+export { LocaleSwitcher } from './LocaleSwitcher';
+export { SkipLink } from './SkipLink';
+export { AriaLiveRegion } from './AriaLiveRegion';
+export { VisuallyHidden } from './VisuallyHidden';
+export { WebVitals } from './WebVitals';
+export { AxeCore } from './AxeCore';
 
 // Re-export variant types and styles for consumers
 export {

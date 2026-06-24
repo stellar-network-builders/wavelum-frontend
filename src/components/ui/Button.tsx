@@ -1,7 +1,8 @@
 'use client';
 
-import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import { SpinnerGap } from '@phosphor-icons/react';
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
+
 import { buttonVariants, type ButtonVariantProps } from './styles';
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
