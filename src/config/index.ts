@@ -6,3 +6,11 @@
  */
 export { theme, colors, spacing, fontFamily, fontSize, borderRadius, boxShadow, zIndex } from './theme';
 export type { LuminaTheme } from './theme';
+
+export {
+  SOROBAN_CONFIG,
+  getSorobanNetwork,
+  getSorobanConfig,
+  getContractAddress,
+} from './soroban';
+export type { SorobanNetworkConfig, SorobanNetwork, ContractName } from './soroban';
