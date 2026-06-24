@@ -1,10 +1,11 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
+import { useTransition } from 'react';
+
+import { useAnnounce } from '@/hooks/useAnnounce';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
-import { useTransition } from 'react';
-import { useAnnounce } from '@/src/hooks/useAnnounce';
 
 export function LocaleSwitcher() {
   const t = useTranslations('LocaleSwitcher');

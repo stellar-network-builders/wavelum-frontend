@@ -1,4 +1,5 @@
 import { getRequestConfig } from 'next-intl/server';
+
 import { routing } from './routing';
 
 type Locale = (typeof routing.locales)[number];

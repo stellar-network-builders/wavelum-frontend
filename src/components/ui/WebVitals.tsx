@@ -1,6 +1,6 @@
 'use client';
 
-import { usePerformanceMetrics } from '@/src/hooks/usePerformanceMetrics';
+import { usePerformanceMetrics } from '@/hooks/usePerformanceMetrics';
 
 export function WebVitals() {
   usePerformanceMetrics();

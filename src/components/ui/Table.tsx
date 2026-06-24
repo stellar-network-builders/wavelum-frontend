@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useMemo, useCallback, useRef, memo, type ReactNode, type ReactElement } from 'react';
 import { CaretUp, CaretDown, ArrowsDownUp } from '@phosphor-icons/react';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { useState, useMemo, useCallback, useRef, memo, type ReactNode, type ReactElement } from 'react';
 
 type SortDirection = 'asc' | 'desc' | null;
 

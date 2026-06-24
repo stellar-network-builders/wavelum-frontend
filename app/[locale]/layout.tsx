@@ -1,10 +1,10 @@
+import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations } from 'next-intl/server';
+
+import { LocaleSwitcher } from '@/components/ui';
+
 import { routing } from '@/i18n/routing';
-import { LocaleSwitcher } from '@/src/components/ui/LocaleSwitcher';
-import { ToastProvider } from '@/src/components/ui/Toast';
-import { ErrorBoundary } from '@/src/components/errors/ErrorBoundary';
-import type { Metadata } from 'next';
 
 type Props = {
   children: React.ReactNode;

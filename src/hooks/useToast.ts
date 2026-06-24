@@ -10,4 +10,4 @@
  * const { toast } = useToast();
  * toast({ title: 'Claim submitted', variant: 'success' });
  */
-export { useToast } from '@/src/components/ui/Toast';
+export { useToast } from '@/components/ui/Toast';

@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { ToastProvider, useToast } from './Toast';
-import { Button } from './Button';
 import { type ReactNode } from 'react';
+
+import { Button } from './Button';
+import { ToastProvider, useToast } from './Toast';
 
 function ToastDemo() {
   const { toast } = useToast();
