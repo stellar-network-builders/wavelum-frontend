@@ -1,12 +1,9 @@
 /**
  * State management stores barrel export.
  *
- * All Zustand (or other) stores are re-exported from here.
- * Create individual store files (e.g. `useWalletStore.ts`, `useVestingStore.ts`)
- * and re-export them through this barrel.
+ * Client-owned Zustand stores are re-exported here so components can import
+ * shared wallet, UI, and preference state from a single stable module.
  */
-
-// Store exports will be added as stores are implemented.
-// Example:
-// export { useWalletStore } from './useWalletStore';
-// export { useVestingStore } from './useVestingStore';
+export { useAuthStore } from './authStore';
+export { usePreferencesStore } from './preferencesStore';
+export { useUiStore } from './uiStore';
