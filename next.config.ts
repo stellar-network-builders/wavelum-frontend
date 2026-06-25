@@ -1,12 +1,18 @@
+import createBundleAnalyzer from '@next/bundle-analyzer';
+import { withSentryConfig } from '@sentry/nextjs';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
+
+const withBundleAnalyzer = createBundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
 
 const withNextIntl = createNextIntlPlugin();
 
 const cspDirectives = [
   `default-src 'self'`,
   `script-src 'self'`,
-  `connect-src 'self' https://*.stellar.org https://soroban-testnet.stellar.org`,
+  `connect-src 'self' https://*.stellar.org https://soroban-testnet.stellar.org https://*.sentry.io`,
   `frame-ancestors 'none'`,
   `img-src 'self' data: https://*.gravatar.com`,
   `style-src 'self' 'unsafe-inline'`,
@@ -48,4 +54,22 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+export default withBundleAnalyzer(
+  withNextIntl(
+    withSentryConfig(nextConfig, {
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
+      silent: true,
+      widenClientFileUpload: true,
+      sourcemaps: {
+        disable: false,
+      },
+      webpack: {
+        treeshake: {
+          removeDebugLogging: true,
+        },
+        automaticVercelMonitors: false,
+      },
+    }),
+  ),
+);

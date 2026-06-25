@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { expect, userEvent, within } from 'storybook/test';
 
-import { Modal } from './Modal';
 import { Button } from './Button';
+import { Modal } from './Modal';
 
 const meta = {
   title: 'UI/Modal',

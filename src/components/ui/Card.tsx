@@ -1,4 +1,5 @@
 import { type HTMLAttributes, type ReactNode } from 'react';
+
 import { cardVariants, type CardVariantProps } from './styles';
 
 type CardProps = HTMLAttributes<HTMLDivElement> &

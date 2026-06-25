@@ -1,6 +1,6 @@
 'use client';
 
-import { useSkipLink } from '@/src/lib/a11y';
+import { useSkipLink } from '@/lib/a11y';
 
 export function SkipLink() {
   const { skipRef, handleSkip } = useSkipLink();

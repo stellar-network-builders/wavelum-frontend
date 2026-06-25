@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+
 import { Table } from './Table';
 
 type VestingRow = { id: number; name: string; amount: string; status: string; date: string };

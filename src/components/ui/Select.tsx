@@ -1,7 +1,8 @@
 'use client';
 
-import { type ReactNode, useId, useState } from 'react';
+import { CaretDown } from '@phosphor-icons/react';
 import * as RadixSelect from '@radix-ui/react-select';
+import { type ReactNode, useId, useState, useDeferredValue, useMemo } from 'react';
 
 type SelectOption = {
   value: string;
@@ -55,6 +56,12 @@ export function Select({
   const labelId = label ? `${id}-label` : undefined;
   const errorId = error ? `${id}-error` : undefined;
   const [searchQuery, setSearchQuery] = useState('');
+  const deferredSearchQuery = useDeferredValue(searchQuery);
+
+  const filteredOptions = useMemo(
+    () => filterOptions(options, deferredSearchQuery),
+    [options, deferredSearchQuery]
+  );
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -114,7 +121,7 @@ export function Select({
             )}
 
             <RadixSelect.Viewport className="p-1">
-              {filterOptions(options, searchQuery).map((item) => {
+              {filteredOptions.map((item) => {
                 if ('options' in item) {
                   return (
                     <RadixSelect.Group key={item.label}>
@@ -195,22 +202,5 @@ function SelectItem({
 }
 
 function ChevronIcon() {
-  return (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 12 12"
-      fill="none"
-      aria-hidden="true"
-      className="text-zinc-400"
-    >
-      <path
-        d="M3 4.5L6 7.5L9 4.5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+  return <CaretDown className="text-zinc-400 h-3 w-3" weight="bold" />;
 }

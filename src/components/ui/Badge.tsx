@@ -1,4 +1,5 @@
 import { type HTMLAttributes } from 'react';
+
 import { badgeVariants, type BadgeVariantProps } from './styles';
 
 type BadgeProps = HTMLAttributes<HTMLSpanElement> &
