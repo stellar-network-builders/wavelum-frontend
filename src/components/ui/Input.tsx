@@ -1,6 +1,11 @@
 'use client';
 
-import { forwardRef, type InputHTMLAttributes, type ReactNode, useId } from 'react';
+import {
+  forwardRef,
+  type InputHTMLAttributes,
+  type ReactNode,
+  useId,
+} from 'react';
 
 import { inputBaseClasses, inputErrorClasses } from './styles';
 
@@ -40,6 +45,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   const generatedId = useId();
   const id = externalId ?? generatedId;
   const charCount = typeof value === 'string' ? value.length : 0;
+  const descriptionIds = [
+    error ? `${id}-error` : '',
+    helperText ? `${id}-helper` : '',
+    maxChars ? `${id}-counter` : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -64,11 +76,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           value={value}
           className={`${error ? inputErrorClasses : inputBaseClasses} ${leftAdornment ? 'pl-10' : ''} ${rightAdornment ? 'pr-10' : ''} ${className ?? ''}`}
           aria-invalid={error ? 'true' : undefined}
-          aria-describedby={
-            [error ? `${id}-error` : '', helperText ? `${id}-helper` : '', maxChars ? `${id}-counter` : '']
-              .filter(Boolean)
-              .join(' ') || undefined
-          }
+          aria-describedby={descriptionIds || undefined}
           {...rest}
         />
         {rightAdornment && (
@@ -81,12 +89,19 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       <div className="flex items-center justify-between gap-2">
         <div>
           {error && (
-            <p id={`${id}-error`} className="text-xs text-red-600 dark:text-red-400" role="alert">
+            <p
+              id={`${id}-error`}
+              className="text-xs text-red-600 dark:text-red-400"
+              role="alert"
+            >
               {error}
             </p>
           )}
-          {!error && helperText && (
-            <p id={`${id}-helper`} className="text-xs text-zinc-500 dark:text-zinc-400">
+          {helperText && (
+            <p
+              id={`${id}-helper`}
+              className="text-xs text-zinc-500 dark:text-zinc-400"
+            >
               {helperText}
             </p>
           )}

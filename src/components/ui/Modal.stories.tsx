@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { expect, userEvent, within } from 'storybook/test';
 
 import { Button } from './Button';
 import { Modal } from './Modal';
@@ -25,6 +26,15 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
+Default.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+
+  await userEvent.click(canvas.getByRole('button', { name: 'Open Modal' }));
+  await expect(
+    within(document.body).getByRole('dialog', { name: 'Modal Title' }),
+  ).toBeInTheDocument();
+};
+
 export const WithoutDescription: Story = {
   args: { description: undefined },
 };

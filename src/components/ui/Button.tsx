@@ -39,6 +39,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     <button
       ref={ref}
       disabled={disabled || loading}
+      aria-busy={loading || undefined}
       className={buttonVariants({ variant, size, className })}
       {...rest}
     >
@@ -54,5 +55,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
 });
 
 function Spinner() {
-  return <SpinnerGap className="h-4 w-4 animate-spin" weight="bold" />;
+  return (
+    <SpinnerGap
+      aria-hidden="true"
+      className="h-4 w-4 animate-spin"
+      role="presentation"
+      weight="bold"
+    />
+  );
 }

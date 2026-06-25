@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { expect, userEvent, within } from 'storybook/test';
 
 import { Select } from './Select';
 
@@ -26,6 +27,15 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = { args: { label: 'Fruit' } };
+Default.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+  const trigger = canvas.getByRole('combobox', { name: 'Fruit' });
+
+  await userEvent.click(trigger);
+  await userEvent.click(within(document.body).getByRole('option', { name: 'Banana' }));
+  await expect(trigger).toHaveTextContent('Banana');
+};
+
 export const WithError: Story = {
   args: { label: 'Fruit', error: 'Please select a fruit.' },
 };
@@ -41,4 +51,16 @@ export const Grouped: Story = {
 };
 export const Searchable: Story = {
   args: { label: 'Searchable', searchable: true },
+};
+Searchable.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+
+  await userEvent.click(canvas.getByRole('combobox', { name: 'Searchable' }));
+  await userEvent.type(
+    within(document.body).getByPlaceholderText('Search...'),
+    'cher',
+  );
+  await expect(
+    within(document.body).getByRole('option', { name: 'Cherry' }),
+  ).toBeInTheDocument();
 };
