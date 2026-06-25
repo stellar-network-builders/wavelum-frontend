@@ -1,8 +1,11 @@
+import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations } from 'next-intl/server';
+
+import { ErrorBoundary } from '@/components/errors';
+import { LocaleSwitcher, ToastProvider } from '@/components/ui';
+
 import { routing } from '@/i18n/routing';
-import { LocaleSwitcher } from '@/src/components/ui/LocaleSwitcher';
-import type { Metadata } from 'next';
 
 type Props = {
   children: React.ReactNode;
@@ -28,8 +31,12 @@ export default async function LocaleLayout({ children }: Props) {
 
   return (
     <NextIntlClientProvider messages={messages}>
-      <LocaleSwitcher />
-      {children}
+      <ErrorBoundary>
+        <ToastProvider>
+          <LocaleSwitcher />
+          {children}
+        </ToastProvider>
+      </ErrorBoundary>
     </NextIntlClientProvider>
   );
 }

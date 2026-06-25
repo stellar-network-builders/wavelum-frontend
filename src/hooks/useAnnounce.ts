@@ -1,7 +1,8 @@
 'use client';
 
 import { useCallback } from 'react';
-import { announce } from '@/src/lib/a11y';
+
+import { announce } from '@/lib/a11y';
 
 /**
  * Hook that returns two stable callbacks for dispatching screen-reader

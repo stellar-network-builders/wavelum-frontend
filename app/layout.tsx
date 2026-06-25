@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
-import { SkipLink } from '@/src/components/ui/SkipLink';
-import { AriaLiveRegion } from '@/src/components/ui/AriaLiveRegion';
-import { WebVitals } from '@/src/components/ui/WebVitals';
+import { AriaLiveRegion, SkipLink, WebVitals } from '@/components/ui';
+import { QueryProvider } from '@/src/providers/QueryProvider';
 import './globals.css';
 
 const geistSans = Geist({
@@ -34,12 +33,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-         <SkipLink />
+        <SkipLink />
         <AriaLiveRegion />
         <WebVitals />
-        <div id="main-content" role="main">
-          {children}
-        </div>
+        <QueryProvider>
+          <div id="main-content" role="main">
+            {children}
+          </div>
+        </QueryProvider>
       </body>
     </html>
   );

@@ -1,8 +1,8 @@
 'use client';
 
-import { type ReactNode, useId, useState, useDeferredValue, useMemo } from 'react';
-import * as RadixSelect from '@radix-ui/react-select';
 import { CaretDown } from '@phosphor-icons/react';
+import * as RadixSelect from '@radix-ui/react-select';
+import { type ReactNode, useId, useState, useDeferredValue, useMemo } from 'react';
 
 type SelectOption = {
   value: string;
@@ -53,6 +53,8 @@ export function Select({
   searchPlaceholder = 'Search...',
 }: SelectProps) {
   const id = useId();
+  const labelId = label ? `${id}-label` : undefined;
+  const errorId = error ? `${id}-error` : undefined;
   const [searchQuery, setSearchQuery] = useState('');
   const deferredSearchQuery = useDeferredValue(searchQuery);
 
@@ -65,6 +67,7 @@ export function Select({
     <div className="flex flex-col gap-1.5">
       {label && (
         <label
+          id={labelId}
           htmlFor={id}
           className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
         >
@@ -75,7 +78,9 @@ export function Select({
       <RadixSelect.Root value={value} onValueChange={onValueChange} disabled={disabled}>
         <RadixSelect.Trigger
           id={id}
+          aria-labelledby={labelId}
           aria-invalid={error ? 'true' : undefined}
+          aria-describedby={errorId}
           className={[
             'flex h-10 w-full items-center justify-between gap-2 rounded-lg border bg-white px-3 py-2 text-sm',
             'transition-colors duration-150',
@@ -143,7 +148,11 @@ export function Select({
       </RadixSelect.Root>
 
       {error && (
-        <p className="text-xs text-red-600 dark:text-red-400" role="alert">
+        <p
+          id={errorId}
+          className="text-xs text-red-600 dark:text-red-400"
+          role="alert"
+        >
           {error}
         </p>
       )}

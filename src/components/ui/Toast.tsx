@@ -1,5 +1,7 @@
 'use client';
 
+import { CheckCircle, XCircle, Warning, Info, X } from '@phosphor-icons/react';
+import * as ToastPrimitive from '@radix-ui/react-toast';
 import {
   createContext,
   useContext,
@@ -7,8 +9,6 @@ import {
   useCallback,
   type ReactNode,
 } from 'react';
-import * as ToastPrimitive from '@radix-ui/react-toast';
-import { CheckCircle, XCircle, Warning, Info, X } from '@phosphor-icons/react';
 
 type ToastVariant = 'success' | 'error' | 'warning' | 'info';
 
@@ -146,4 +146,3 @@ function InfoIcon() {
 function CloseIcon() {
   return <X weight="bold" className="h-3 w-3" />;
 }
-

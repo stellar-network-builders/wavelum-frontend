@@ -10,7 +10,8 @@
   },
   "LocaleSwitcher": {
     "label": "言語を変更",
-    "locale": "{locale, select, en {English} ja {日本語} ko {한국어} zh {中文} other {Unknown}}"
+    "locale": "{locale, select, en {English} ja {日本語} ko {한국어} zh {中文} other {Unknown}}",
+    "loading": "言語を切り替え中..."
   },
   "Common": {
     "loading": "読み込み中...",
@@ -19,7 +20,31 @@
     "cancel": "キャンセル",
     "confirm": "確認",
     "save": "保存",
-    "close": "閉じる"
+    "close": "閉じる",
+    "refresh": "ページを更新",
+    "reportIssue": "問題を報告",
+    "pageNotFound": "ページが見つかりません",
+    "pageNotFoundDescription": "お探しのページは存在しないか、移動しました。",
+    "goHome": "ホームに戻る",
+    "errorDescription": "予期しないエラーが発生しました。再試行するか、ページを更新するか、問題を報告してください。",
+    "criticalError": "重大なエラー",
+    "criticalErrorDescription": "重大なエラーが発生しました。ページを更新してください。"
+  },
+  "Errors": {
+    "sessionExpired": "セッションの有効期限が切れました。ウォレットを再接続してください。",
+    "accessDenied": "この操作を実行する権限がありません。",
+    "notFound": "要求されたリソースが見つかりませんでした。",
+    "rateLimited": "リクエストが多すぎます。しばらく待ってから再試行してください。",
+    "serverError": "サーバーで問題が発生しました。後でもう一度お試しください。",
+    "serviceUnavailable": "サービスが一時的に利用できません。後でもう一度お試しください。",
+    "networkError": "サーバーに接続できません。接続を確認してください。",
+    "walletNotDetected": "Freighterウォレットが検出されませんでした。Freighterをインストールしてください。",
+    "walletRejected": "ウォレットリクエストがユーザーによって拒否されました。",
+    "walletDisconnected": "ウォレットの接続が解除されました。",
+    "wrongNetwork": "ウォレットで正しいStellarネットワークに切り替えてください。",
+    "transactionTooLarge": "トランザクション手数料が予算を超えています。より少ない金額でお試しください。",
+    "contractError": "スマートコントラクトがエラーを返しました。もう一度お試しください。",
+    "transactionTimeout": "トランザクションがタイムアウトしました。もう一度お試しください。"
   },
   "Wallet": {
     "connect": "ウォレットを接続",
