@@ -1,6 +1,11 @@
 'use client';
 
-import { useState, useMemo, type ReactNode } from 'react';
+import {
+  type ButtonHTMLAttributes,
+  useState,
+  useMemo,
+  type ReactNode,
+} from 'react';
 
 type SortDirection = 'asc' | 'desc' | null;
 
@@ -67,6 +72,13 @@ export function Table<T extends Record<string, unknown>>({
 }: TableProps<T>) {
   const [sortColumn, setSortColumn] = useState<string | null>(defaultSortColumn ?? null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(defaultSortDirection);
+  const [internalPage, setInternalPage] = useState(page ?? 1);
+  const currentPage = page ?? internalPage;
+
+  const handlePageChange = (nextPage: number) => {
+    setInternalPage(nextPage);
+    onPageChange?.(nextPage);
+  };
 
   const handleSort = (columnKey: string) => {
     const column = columns.find((c) => c.key === columnKey);
@@ -110,15 +122,13 @@ export function Table<T extends Record<string, unknown>>({
   // Client-side pagination when callbacks aren't used
   const paginatedData = useMemo(() => {
     if (onPageChange || !pageSize) return sortedData;
-    const start = ((page ?? 1) - 1) * pageSize;
+    const start = (currentPage - 1) * pageSize;
     return sortedData.slice(start, start + pageSize);
-  }, [sortedData, page, pageSize, onPageChange]);
+  }, [sortedData, currentPage, pageSize, onPageChange]);
 
   const totalPages = totalItems
     ? Math.ceil(totalItems / pageSize)
     : Math.ceil(sortedData.length / pageSize);
-
-  const currentPage = page ?? 1;
 
   // ------------------------------------------------------------------
   // Empty state
@@ -219,7 +229,7 @@ export function Table<T extends Record<string, unknown>>({
           <div className="flex items-center gap-1">
             <PageButton
               disabled={currentPage <= 1}
-              onClick={() => onPageChange?.(currentPage - 1)}
+              onClick={() => handlePageChange(currentPage - 1)}
               aria-label="Previous page"
             >
               ‹
@@ -250,7 +260,9 @@ export function Table<T extends Record<string, unknown>>({
                   <PageButton
                     key={item}
                     active={item === currentPage}
-                    onClick={() => onPageChange?.(item)}
+                    onClick={() => handlePageChange(item)}
+                    aria-label={`Page ${item}`}
+                    aria-current={item === currentPage ? 'page' : undefined}
                   >
                     {item}
                   </PageButton>
@@ -258,7 +270,7 @@ export function Table<T extends Record<string, unknown>>({
               )}
             <PageButton
               disabled={currentPage >= totalPages}
-              onClick={() => onPageChange?.(currentPage + 1)}
+              onClick={() => handlePageChange(currentPage + 1)}
               aria-label="Next page"
             >
               ›
@@ -313,8 +325,7 @@ function PageButton({
   children: ReactNode;
   disabled?: boolean;
   active?: boolean;
-  [key: string]: unknown;
-}) {
+} & ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       disabled={disabled}

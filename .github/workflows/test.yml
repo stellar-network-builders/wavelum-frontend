@@ -51,3 +51,26 @@ jobs:
             "backgrounds": ["#ffffff", "#0a0a0a", "#18181b", "#fafafa"],
             "level": "AA"
           }' || echo "Color contrast check skipped (tool may not be available)"
+
+  visual-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - name: Build Storybook
+        run: npm run build-storybook
+      - name: Publish Chromatic visual review
+        env:
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        run: |
+          if [ -z "$CHROMATIC_PROJECT_TOKEN" ]; then
+            echo "Chromatic skipped because CHROMATIC_PROJECT_TOKEN is not configured."
+            exit 0
+          fi
+
+          npx chromatic --project-token="$CHROMATIC_PROJECT_TOKEN" --storybook-build-dir=storybook-static --exit-zero-on-changes

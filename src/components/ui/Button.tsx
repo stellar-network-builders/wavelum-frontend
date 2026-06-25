@@ -37,6 +37,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     <button
       ref={ref}
       disabled={disabled || loading}
+      aria-busy={loading || undefined}
       className={buttonVariants({ variant, size, className })}
       {...rest}
     >
@@ -59,6 +60,7 @@ function Spinner() {
       fill="none"
       viewBox="0 0 24 24"
       aria-hidden="true"
+      role="presentation"
     >
       <circle
         className="opacity-25"
