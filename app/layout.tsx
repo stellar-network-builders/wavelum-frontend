@@ -7,6 +7,7 @@ import { ToastProvider } from '@/src/components/ui/Toast';
 import { WebVitals } from '@/src/components/ui/WebVitals';
 
 import { AriaLiveRegion, SkipLink, WebVitals } from '@/components/ui';
+import { QueryProvider } from '@/src/providers/QueryProvider';
 import './globals.css';
 
 const geistSans = Geist({
@@ -48,11 +49,14 @@ export default function RootLayout({
           </ToastProvider>
         </ErrorBoundary>
          <SkipLink />
+        <SkipLink />
         <AriaLiveRegion />
         <WebVitals />
-        <div id="main-content" role="main">
-          {children}
-        </div>
+        <QueryProvider>
+          <div id="main-content" role="main">
+            {children}
+          </div>
+        </QueryProvider>
       </body>
     </html>
   );

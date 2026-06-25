@@ -126,7 +126,7 @@ export function Table<T extends Record<string, unknown>>({
   // Virtual Scrolling Setup
   // ------------------------------------------------------------------
   const parentRef = useRef<HTMLDivElement>(null);
-  
+
   const virtualizer = useVirtualizer({
     count: paginatedData.length,
     getScrollElement: () => parentRef.current,

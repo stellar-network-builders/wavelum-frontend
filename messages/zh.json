@@ -10,7 +10,8 @@
   },
   "LocaleSwitcher": {
     "label": "切换语言",
-    "locale": "{locale, select, en {English} ja {日本語} ko {한국어} zh {中文} other {Unknown}}"
+    "locale": "{locale, select, en {English} ja {日本語} ko {한국어} zh {中文} other {Unknown}}",
+    "loading": "正在切换语言..."
   },
   "Common": {
     "loading": "加载中...",
@@ -19,7 +20,31 @@
     "cancel": "取消",
     "confirm": "确认",
     "save": "保存",
-    "close": "关闭"
+    "close": "关闭",
+    "refresh": "刷新页面",
+    "reportIssue": "报告问题",
+    "pageNotFound": "页面未找到",
+    "pageNotFoundDescription": "您查找的页面不存在或已被移动。",
+    "goHome": "返回首页",
+    "errorDescription": "发生意外错误。您可以重试、刷新页面或报告问题。",
+    "criticalError": "严重错误",
+    "criticalErrorDescription": "发生严重错误。请尝试刷新页面。"
+  },
+  "Errors": {
+    "sessionExpired": "会话已过期。请重新连接您的钱包。",
+    "accessDenied": "您没有权限执行此操作。",
+    "notFound": "请求的资源未找到。",
+    "rateLimited": "请求过多。请稍后再试。",
+    "serverError": "服务器出现问题。请稍后再试。",
+    "serviceUnavailable": "服务暂时不可用。请稍后再试。",
+    "networkError": "无法连接到服务器。请检查您的网络连接。",
+    "walletNotDetected": "未检测到 Freighter 钱包。请安装 Freighter。",
+    "walletRejected": "钱包请求已被用户拒绝。",
+    "walletDisconnected": "您的钱包已断开连接。",
+    "wrongNetwork": "请在钱包中切换到正确的 Stellar 网络。",
+    "transactionTooLarge": "交易费用超出预算。请尝试减少金额。",
+    "contractError": "智能合约返回错误。请重试。",
+    "transactionTimeout": "交易超时。请重试。"
   },
   "Wallet": {
     "connect": "连接钱包",

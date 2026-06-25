@@ -287,4 +287,3 @@ function InfoIcon() {
 function CloseIcon() {
   return <X weight="bold" className="h-3 w-3" />;
 }
-
