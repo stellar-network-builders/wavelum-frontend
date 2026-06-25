@@ -1,5 +1,11 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { SkipLink } from '@/src/components/ui/SkipLink';
+import { AriaLiveRegion } from '@/src/components/ui/AriaLiveRegion';
+import { ErrorBoundary } from '@/src/components/errors/ErrorBoundary';
+import { ToastProvider } from '@/src/components/ui/Toast';
+import { WebVitals } from '@/src/components/ui/WebVitals';
+
 import { AriaLiveRegion, SkipLink, WebVitals } from '@/components/ui';
 import { QueryProvider } from '@/src/providers/QueryProvider';
 import './globals.css';
@@ -33,6 +39,16 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <ErrorBoundary>
+          <ToastProvider>
+            <SkipLink />
+            <AriaLiveRegion />
+            <div id="main-content" role="main">
+              {children}
+            </div>
+          </ToastProvider>
+        </ErrorBoundary>
+         <SkipLink />
         <SkipLink />
         <AriaLiveRegion />
         <WebVitals />
