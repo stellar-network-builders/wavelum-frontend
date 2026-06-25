@@ -11,6 +11,7 @@ const dirname =
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   test: {
+    exclude: ['e2e/**', 'node_modules/**'],
     projects: [
       {
         extends: true,
