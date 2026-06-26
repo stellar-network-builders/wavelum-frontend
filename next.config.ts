@@ -9,17 +9,9 @@ const withBundleAnalyzer = createBundleAnalyzer({
 
 const withNextIntl = createNextIntlPlugin();
 
-const cspDirectives = [
-  `default-src 'self'`,
-  `script-src 'self'`,
-  `connect-src 'self' https://*.stellar.org https://soroban-testnet.stellar.org https://*.sentry.io`,
-  `frame-ancestors 'none'`,
-  `img-src 'self' data: https://*.gravatar.com`,
-  `style-src 'self' 'unsafe-inline'`,
-  `base-uri 'self'`,
-  `form-action 'self'`,
-];
-
+// CSP is generated per-request in `proxy.ts` so a fresh nonce can be
+// included in `script-src`. The remaining security headers remain in
+// next.config.ts so that static assets (which the proxy skips) still get them.
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   images: {
@@ -42,7 +34,6 @@ const nextConfig: NextConfig = {
       {
         source: '/(.*)',
         headers: [
-          { key: 'Content-Security-Policy', value: cspDirectives.join('; ') },
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
