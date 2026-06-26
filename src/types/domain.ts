@@ -21,6 +21,8 @@ export type UserProfile = {
   publicKey: string;
   displayName?: string;
   avatarUrl?: string;
+  /** Authorization role; gates admin-only navigation and routes. */
+  role?: 'user' | 'admin';
 };
 
 export type PaginationParams = {
