@@ -8,6 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest run --project=unit",
+    "test:watch": "vitest --project=unit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
