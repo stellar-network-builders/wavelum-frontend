@@ -1,8 +1,17 @@
 /**
  * Admin Feature Module
  *
- * This directory contains all components, hooks, types, and utilities
- * specific to the admin panel feature.
+ * Everything specific to the admin panel: user/KYC management and vault
+ * administration.
  *
- * Import from `@/features/admin` to access the module's public API.
+ * Internal layout:
+ * - `components/` — feature UI
+ * - `hooks/`      — data fetching & feature state
+ * - `types/`      — feature-local types
+ *
+ * Only what's re-exported below is the feature's public API. Import it from
+ * `@/features/admin`; reach into internal files only from within the feature.
  */
+export * from './components';
+export * from './hooks';
+export * from './types';

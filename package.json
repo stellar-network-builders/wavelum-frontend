@@ -9,10 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run --project=unit",
-    "test:unit": "vitest run --project=unit",
     "test:watch": "vitest --project=unit",
-    "prepare": "husky",
-    "lint-staged": "lint-staged",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },

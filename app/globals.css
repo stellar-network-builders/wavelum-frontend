@@ -16,12 +16,24 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/*
+ * System preference is honored only until the user makes an explicit choice.
+ * Once `ThemeProvider` sets `.light` or `.dark` on <html>, this no longer
+ * applies, so the manual toggle always wins.
+ */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not(.light):not(.dark) {
     --background: #0a0a0a;
     --foreground: #ededed;
     --focus-ring: #a1a1aa;
   }
+}
+
+/* Class-based dark theme — driven by the theme toggle (uiStore + ThemeProvider). */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --focus-ring: #a1a1aa;
 }
 
 @media (prefers-reduced-motion: reduce) {
