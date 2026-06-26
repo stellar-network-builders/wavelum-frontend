@@ -7,6 +7,20 @@
 export { ApiClient, createSorobanClient } from './api';
 export type { ApiClientConfig, ApiResponse, ApiError } from './api';
 
+// Centralized Axios HTTP client + typed service modules
+export {
+  apiClient,
+  http,
+  registerTokenGetter,
+  registerUnauthorizedHandler,
+  registerToastHandler,
+} from './api/client';
+export { queryKeys } from './queryKeys';
+export { vestingService } from './vestingService';
+export { authService } from './authService';
+export { portfolioService } from './portfolioService';
+export { adminService } from './adminService';
+
 // Soroban layer
 export {
   getSorobanClient,
