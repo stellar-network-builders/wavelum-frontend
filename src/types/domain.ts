@@ -21,6 +21,8 @@ export type UserProfile = {
   publicKey: string;
   displayName?: string;
   avatarUrl?: string;
+  /** Authorization role from SEP-10 auth; defaults to `user` when absent. */
+  role?: 'user' | 'admin';
 };
 
 export type PaginationParams = {
