@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+
 import type { UserProfile, WalletStatus } from '@/src/types/domain';
 
 type AuthState = {
@@ -22,6 +23,11 @@ const initialAuthState = {
 };
 
 export const useAuthStore = create<AuthState>()(
+  /*
+   * Only non-sensitive fields are persisted to localStorage. The JWT token is
+   * intentionally NOT persisted so it cannot be exfiltrated by XSS — the user
+   * re-authenticates on every full page reload.
+   */
   persist(
     (set) => ({
       ...initialAuthState,
@@ -41,10 +47,9 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'lumina-auth',
       storage: createJSONStorage(() => localStorage),
-      partialize: ({ status, publicKey, token, profile }) => ({
+      partialize: ({ status, publicKey, profile }) => ({
         status,
         publicKey,
-        token,
         profile,
       }),
     },

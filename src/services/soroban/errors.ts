@@ -97,7 +97,10 @@ export function mapContractError(
  * Parse a Soroban error response and return a user-friendly message.
  *
  * Handles both RPC-level errors (jsonrpc error object) and contract-level
- * errors (nested ContractError in the error data).
+ * errors (nested ContractError in the error data). Contract errors take
+ * precedence - when an RPC wrapper carries an embedded ContractError in
+ * `data`, that is the more specific reason for the failure and should be
+ * surfaced to the user.
  *
  * @param error - The raw error from a Soroban RPC call.
  * @returns A user-friendly error message.
@@ -106,17 +109,18 @@ export function parseSorobanError(error: unknown): string {
   if (error && typeof error === 'object') {
     const err = error as Record<string, unknown>;
 
-    // RPC-level error
-    if (typeof err.code === 'number') {
-      return mapRpcError(err.code as number);
-    }
-
-    // Contract-level error embedded in data
+    // Contract-level error embedded in `data` takes precedence over the
+    // generic RPC code - it is a more specific signal of what went wrong.
     if (err.data && typeof err.data === 'object') {
       const data = err.data as Record<string, unknown>;
       if (data.type === 'ContractError' && typeof data.code === 'number') {
         return mapContractError('vestingVault', data.code as number);
       }
+    }
+
+    // RPC-level error code
+    if (typeof err.code === 'number') {
+      return mapRpcError(err.code as number);
     }
 
     if (typeof err.message === 'string') {
