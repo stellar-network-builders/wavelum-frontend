@@ -26,4 +26,9 @@ export const queryKeys = {
     summary: () => [...queryKeys.portfolio.all, 'summary'] as const,
     tokenBalances: () => [...queryKeys.portfolio.all, 'token-balances'] as const,
   },
+  admin: {
+    all: ['admin'] as const,
+    users: (params: PaginationParams = {}) =>
+      [...queryKeys.admin.all, 'users', params] as const,
+  },
 } as const;

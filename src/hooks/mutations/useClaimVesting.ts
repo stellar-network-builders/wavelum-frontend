@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from '@/src/services/apiClient';
+
 import { queryKeys } from '@/src/services/queryKeys';
+import { vestingService } from '@/src/services/vestingService';
 import type {
   Claim,
   ClaimVestingInput,
@@ -17,10 +18,7 @@ export function useClaimVesting() {
 
   return useMutation<Claim, Error, ClaimVestingInput, ClaimMutationContext>({
     mutationFn: ({ subScheduleId, amount }) =>
-      apiFetch<Claim>(`/vestings/${subScheduleId}/claims`, {
-        method: 'POST',
-        body: JSON.stringify({ amount }),
-      }),
+      vestingService.claimVesting(subScheduleId, amount),
     onMutate: async ({ vaultId, subScheduleId, amount }) => {
       const vestingsKey = queryKeys.vestings.list(vaultId);
       const claimsKey = queryKeys.claims.list(subScheduleId);

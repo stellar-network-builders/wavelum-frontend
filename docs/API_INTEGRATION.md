@@ -1,45 +1,76 @@
 # API Integration
 
-This document describes how Lumina Frontend talks to the backend API: the client, the query-key convention, and the mutation hooks.
+This document describes how Lumina Frontend talks to the backend API: the Axios client, the typed service modules, the query-key convention, and the React Query hooks.
 
 ## Configuration
 
 The API base URL comes from `NEXT_PUBLIC_API_URL` (default `http://localhost:4000`). All requests are made relative to this base.
 
+## Architecture
+
+```
+React component
+  └─ React Query hook        (src/hooks/queries, src/hooks/mutations)
+       └─ service module      (src/services/{vesting,auth,portfolio,admin}Service.ts)
+            └─ http helper     (src/services/api/client.ts)
+                 └─ Axios apiClient  (interceptors: auth, errors, retry)
+```
+
+Feature code never calls `fetch`/`axios` directly. It goes through a typed service module, which is built on the shared `http` helper, which wraps the single pre-configured Axios instance.
+
 ## API client
 
-A single typed client wraps `fetch`, sets JSON headers, attaches the SEP-10 session token when present, and normalizes errors. Centralizing this keeps call sites small and consistent.
+`src/services/api/client.ts` exports a single Axios instance (`apiClient`) plus a terse typed `http` helper. The instance is configured with the base URL, a 30s timeout, and `withCredentials: false` (the JWT lives in the `Authorization` header, not cookies).
+
+### Request interceptor
+
+Injects `Authorization: Bearer <token>`. The token is read from a getter registered at runtime by `ApiClientProvider` (which reads the Zustand `authStore`), falling back to the persisted `lumina-auth` localStorage entry for SSR/hydration safety. Requests are logged in development.
+
+### Response interceptor
+
+| Status | Behavior |
+| ------ | -------- |
+| `401`  | Runs the registered unauthorized handler — clears auth and opens the connect-wallet modal |
+| `403`  | Shows an "Insufficient permissions" error toast |
+| `429`  | Exponential backoff retry (honoring `Retry-After`), up to 3 attempts |
+| `5xx`  | Logs in dev, shows a generic error toast |
+
+Every rejection is normalized to the app's typed `ApiError` (`src/lib/errors.ts`), carrying the HTTP status, a machine-readable code, the endpoint, and an optional `retryAfter`. Components surface it via `useErrorToast`.
+
+### Runtime registration
+
+`apiClient` must not import React, the store, or the router (that would couple the transport layer to the UI and risk import cycles). Instead, `src/providers/ApiClientProvider.tsx` — mounted inside `<ToastProvider>` — registers the token getter, the 401 handler, and the toast emitter on mount.
+
+## Typed service modules
+
+One module per backend domain, each function accepting an optional `AbortSignal`:
+
+- `vestingService` — `getVaults`, `getVaultById`, `getSubSchedules`, `getClaims`, `claimVesting`, `createVault`
+- `authService` — `getSep10Challenge`, `submitSep10Response`, `refreshToken`
+- `portfolioService` — `getTokenBalances`, `getPortfolioSummary`
+- `adminService` — `getUsers`, `approveKyc`, `pauseVault`
 
 ```ts
-// services/api-client.ts
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
-
-/**
- * Perform a typed JSON request against the Lumina backend API.
- *
- * @typeParam T - Expected shape of the response body.
- * @param path - Path relative to the API base URL, e.g. "/vesting/schedules".
- * @param init - Standard fetch options. An auth token is added automatically when available.
- * @returns The parsed JSON response typed as `T`.
- * @throws ApiError when the response status is not in the 2xx range.
- */
-export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...authHeader(),
-      ...init?.headers,
-    },
-  });
-
-  if (!res.ok) {
-    throw new ApiError(res.status, await safeMessage(res));
-  }
-
-  return res.json() as Promise<T>;
-}
+// src/services/vestingService.ts
+export const vestingService = {
+  getVaults: (params: PaginationParams = {}, signal?: AbortSignal) =>
+    http.get<PaginatedResponse<Vault>>('/vaults', {
+      params: { page: params.page, pageSize: params.pageSize },
+      signal,
+    }),
+  // ...
+};
 ```
+
+## Generated types
+
+Backend response shapes are typed from the backend's OpenAPI document via [`openapi-typescript`](https://github.com/drwpow/openapi-typescript):
+
+```bash
+npm run generate:types   # openapi-typescript $NEXT_PUBLIC_API_URL/openapi.json --output src/types/api.ts
+```
+
+`src/types/api.ts` holds a checked-in copy (a `paths` interface plus a `components.schemas` namespace) used as a fallback in offline/CI environments. Run the script against a live backend to refresh it; consumers switch over with no code changes.
 
 ## Server state with React Query
 
@@ -47,42 +78,37 @@ Data from the API is treated as server state and managed with [TanStack Query](h
 
 ### Query keys
 
-Query keys are structured arrays, ordered from broad to specific. A central factory keeps them consistent and makes invalidation predictable.
+Query keys are structured arrays, ordered from broad to specific. A central factory (`src/services/queryKeys.ts`) keeps them consistent and makes invalidation predictable.
 
 ```ts
-// services/query-keys.ts
 export const queryKeys = {
-  vesting: {
-    all: ["vesting"] as const,
-    lists: () => [...queryKeys.vesting.all, "list"] as const,
-    list: (account: string) => [...queryKeys.vesting.lists(), account] as const,
-    detail: (id: string) => [...queryKeys.vesting.all, "detail", id] as const,
+  vaults: {
+    all: ['vaults'] as const,
+    lists: () => [...queryKeys.vaults.all, 'list'] as const,
+    list: (params: PaginationParams = {}) => [...queryKeys.vaults.lists(), params] as const,
+    detail: (vaultId: string) => [...queryKeys.vaults.all, 'detail', vaultId] as const,
   },
+  // vestings, claims, portfolio, admin ...
 } as const;
 ```
 
 Conventions:
 
-- The first element is the domain (`"vesting"`).
+- The first element is the domain (`"vaults"`).
 - Lists and details are separate sub-keys.
-- Variables (account, id) come last.
-- Invalidate broadly by prefix: invalidating `queryKeys.vesting.all` refetches every vesting query.
+- Variables (params, id) come last.
+- Invalidate broadly by prefix: invalidating `queryKeys.vaults.all` refetches every vault query.
 
 ### Query hooks
 
+Hooks forward React Query's `signal` to the service for request cancellation.
+
 ```ts
-// hooks/use-vesting-schedules.ts
-/**
- * Fetch the vesting schedules for an account.
- *
- * @param account - Stellar account public key (G...).
- * @returns A React Query result with the account's schedules.
- */
-export function useVestingSchedules(account: string) {
+// src/hooks/queries/useVaults.ts
+export function useVaults(params: PaginationParams = {}) {
   return useQuery({
-    queryKey: queryKeys.vesting.list(account),
-    queryFn: () => apiFetch<VestingSchedule[]>(`/vesting/schedules?account=${account}`),
-    enabled: Boolean(account),
+    queryKey: queryKeys.vaults.list(params),
+    queryFn: ({ signal }) => vestingService.getVaults(params, signal),
   });
 }
 ```
@@ -92,23 +118,16 @@ export function useVestingSchedules(account: string) {
 Writes use `useMutation`. After a successful mutation, invalidate the affected query keys so the UI reflects the new state.
 
 ```ts
-// hooks/use-create-schedule.ts
-/**
- * Create a vesting schedule and refresh the account's schedule list on success.
- */
-export function useCreateSchedule() {
+// src/hooks/mutations/useCreateVault.ts
+export function useCreateVault(options: UseCreateVaultOptions = {}) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (input: CreateScheduleInput) =>
-      apiFetch<VestingSchedule>("/vesting/schedules", {
-        method: "POST",
-        body: JSON.stringify(input),
-      }),
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.vesting.list(variables.account),
-      });
+    mutationFn: (input: CreateVaultInput) => vestingService.createVault(input),
+    onSuccess: (vault) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.vaults.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.portfolio.all });
+      options.onSuccess?.(vault);
     },
   });
 }
@@ -116,13 +135,16 @@ export function useCreateSchedule() {
 
 ## Error handling
 
-- The client throws a typed `ApiError` carrying the HTTP status and a message.
-- Components read `error` from the query or mutation result and render a friendly message.
-- A `401` response means the session token is missing or expired; trigger the SEP-10 flow again (see [WALLET_INTEGRATION.md](WALLET_INTEGRATION.md)).
+- The client normalizes every failure to a typed `ApiError` carrying the HTTP status, a code, and the endpoint.
+- Components read `error` from the query or mutation result and render a friendly message, or rely on `useErrorToast` for automatic toasts.
+- A `401` response means the session token is missing or expired; the interceptor clears auth and reopens wallet connection to trigger the SEP-10 flow again (see [WALLET_INTEGRATION.md](WALLET_INTEGRATION.md)).
 
 ## Conventions summary
 
-- One client function (`apiFetch`) for all HTTP calls.
+- One Axios client (`apiClient`) and one `http` helper for all HTTP calls.
+- One service module per backend domain; functions accept an `AbortSignal`.
 - Query keys come from the central factory, never inline arrays.
-- One hook per resource, colocated under `hooks/`.
+- One hook per resource, colocated under `hooks/`; hooks forward the cancellation `signal`.
 - Mutations invalidate the smallest set of keys that covers the change.
+- Backend types are generated from OpenAPI, never hand-maintained.
+```
