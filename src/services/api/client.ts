@@ -32,31 +32,20 @@ export const apiClient = axios.create({
 /* ─── Token Management ───────────────────────────────────────────────────── */
 
 /**
- * Get the current JWT token. Falls back to localStorage first,
- * then delegates to a registered getter (e.g. from Zustand auth store).
- * This ensures token injection works even before the auth store initializes.
+ * Get the current JWT token. The token is held in memory by the auth store
+ * (via a registered getter) and is intentionally NOT persisted to
+ * localStorage/cookies so XSS cannot exfiltrate it. Callers must provide a
+ * getter via `registerTokenGetter` — without one, no Authorization header
+ * is attached.
  */
 function getToken(): string | null {
-  // 1. Try the registered getter (most current, from auth store)
-  if (registeredTokenGetter) {
-    const token = registeredTokenGetter();
-    if (token) return token;
+  if (!registeredTokenGetter) return null;
+  try {
+    return registeredTokenGetter();
+  } catch {
+    // Auth store unavailable (e.g. SSR before mount) — silently fall through.
+    return null;
   }
-  // 2. Fall back to localStorage for SSR/hydration safety
-  if (typeof window !== 'undefined') {
-    try {
-      const stored = localStorage.getItem('lumina-auth-token');
-      if (stored) {
-        const parsed = JSON.parse(stored) as { token: string; expiresAt: number };
-        if (parsed.expiresAt > Date.now()) {
-          return parsed.token;
-        }
-      }
-    } catch {
-      // localStorage unavailable or corrupted — ignore
-    }
-  }
-  return null;
 }
 
 let registeredTokenGetter: (() => string | null) | null = null;

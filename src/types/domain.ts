@@ -21,7 +21,10 @@ export type UserProfile = {
   publicKey: string;
   displayName?: string;
   avatarUrl?: string;
-  /** Authorization role from SEP-10 auth; defaults to `user` when absent. */
+  /**
+   * Authorization role from SEP-10 auth; gates admin-only navigation and
+   * routes. Defaults to `user` when absent.
+   */
   role?: 'user' | 'admin';
 };
 
