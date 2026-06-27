@@ -5,6 +5,7 @@ import { AriaLiveRegion, SkipLink, WebVitals } from '@/components/ui';
 
 import { QueryProvider } from '@/src/providers/QueryProvider';
 import { ThemeProvider } from '@/src/providers/ThemeProvider';
+import { WalletProvider } from '@/features/wallet';
 import './globals.css';
 
 /**
@@ -49,11 +50,13 @@ export default function RootLayout({
         <AriaLiveRegion />
         <WebVitals />
         <ThemeProvider>
-          <QueryProvider>
-            <div id="main-content" role="main">
-              {children}
-            </div>
-          </QueryProvider>
+          <WalletProvider>
+            <QueryProvider>
+              <div id="main-content" role="main">
+                {children}
+              </div>
+            </QueryProvider>
+          </WalletProvider>
         </ThemeProvider>
       </body>
     </html>
