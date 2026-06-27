@@ -60,8 +60,8 @@ let onUnauthorized: (() => void) | null = null;
 let toastHandler: ((toast: ToastPayload) => void) | null = null;
 
 /**
- * Register a token getter (e.g. from the Zustand auth store). Tried first,
- * before the localStorage fallback, so token injection stays current.
+ * Register a token getter (e.g. from the Zustand auth store) so the request
+ * interceptor can read the current in-memory JWT.
  */
 export function registerTokenGetter(getter: () => string | null) {
   registeredTokenGetter = getter;
@@ -90,30 +90,20 @@ function emitToast(toast: ToastPayload) {
 /* ─── Token Management ───────────────────────────────────────────────────── */
 
 /**
- * Resolve the current JWT. Prefers the registered getter (most current) and
- * falls back to the persisted auth token in localStorage for SSR/hydration
- * safety before the store initializes.
+ * Resolve the current JWT via the registered getter (e.g. the Zustand auth
+ * store). The token is held in memory only and is intentionally NOT persisted
+ * to localStorage/cookies so XSS cannot exfiltrate it — see `authStore`'s
+ * `partialize`, which excludes `token`. Without a registered getter, no
+ * Authorization header is attached.
  */
 function getToken(): string | null {
-  if (registeredTokenGetter) {
-    const token = registeredTokenGetter();
-    if (token) return token;
+  if (!registeredTokenGetter) return null;
+  try {
+    return registeredTokenGetter();
+  } catch {
+    // Auth store unavailable (e.g. SSR before mount) — silently fall through.
+    return null;
   }
-
-  if (typeof window !== 'undefined') {
-    try {
-      // Mirrors the zustand `persist` key in `authStore` ("lumina-auth").
-      const raw = localStorage.getItem('lumina-auth');
-      if (raw) {
-        const parsed = JSON.parse(raw) as { state?: { token?: string | null } };
-        if (parsed.state?.token) return parsed.state.token;
-      }
-    } catch {
-      // localStorage unavailable or corrupted — ignore.
-    }
-  }
-
-  return null;
 }
 
 /* ─── Request Interceptor ────────────────────────────────────────────────── */

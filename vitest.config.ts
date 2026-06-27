@@ -3,13 +3,17 @@ import { fileURLToPath } from 'node:url';
 
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
 import { playwright } from '@vitest/browser-playwright';
+import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 const dirname =
-  typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
+  typeof __dirname !== 'undefined'
+    ? __dirname
+    : path.dirname(fileURLToPath(import.meta.url));
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
+  plugins: [tsconfigPaths()],
   test: {
     projects: [
       {
@@ -19,7 +23,6 @@ export default defineConfig({
         },
         plugins: [
           // The plugin will run tests for the stories defined in your Storybook config
-          // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
           storybookTest({ configDir: path.join(dirname, '.storybook') }),
         ],
         test: {
@@ -30,6 +33,23 @@ export default defineConfig({
             provider: playwright({}),
             instances: [{ browser: 'chromium' }],
           },
+        },
+      },
+      {
+        // Lightweight Node unit-test project for plain *.test.ts/*.spec.ts
+        // files. Excludes Storybook stories so they keep running under the
+        // `storybook` project above.
+        extends: true,
+        test: {
+          name: 'unit',
+          environment: 'happy-dom',
+          include: ['src/**/*.{test,spec}.{ts,tsx}'],
+          exclude: [
+            '**/*.stories.{ts,tsx}',
+            '**/*.stories.test.{ts,tsx}',
+            'node_modules/**',
+            '.next/**',
+          ],
         },
       },
     ],
