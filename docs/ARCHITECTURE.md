@@ -96,6 +96,68 @@ The application is organized in layers, from the route surface down to external 
 
 See [STATE_MANAGEMENT.md](STATE_MANAGEMENT.md) for how client state and server state are split, and [API_INTEGRATION.md](API_INTEGRATION.md) and [SOROBAN_INTEGRATION.md](SOROBAN_INTEGRATION.md) for the integration layers.
 
+## Project structure
+
+Routes live in `app/` (App Router). Everything else lives under `src/`, split into shared layers and self-contained feature modules.
+
+```
+app/                      # Routes, layouts, and route handlers (App Router)
+src/
+├── components/           # Shared UI, not tied to any one feature
+│   ├── ui/               # Primitives (Button, Card, Modal, Table, …)
+│   └── layout/           # App shell (Header, Sidebar, …)
+├── features/             # Self-contained feature modules
+│   ├── vesting/          # Vesting dashboard
+│   ├── streaming/        # Token streaming
+│   ├── wallet/           # Wallet connection & SEP-10 auth
+│   └── admin/            # Admin panel
+├── hooks/                # Shared React hooks
+├── services/             # API client + Soroban contract clients
+├── providers/            # Client context providers (React Query, …)
+├── stores/               # Zustand stores (cross-cutting client state)
+├── lib/                  # Framework-agnostic helpers (format, errors, a11y, …)
+├── utils/                # Curated re-exports of lib helpers for app code
+├── config/               # App configuration & design tokens (theme, soroban)
+├── constants/            # Enums and constant values
+└── types/                # Shared TypeScript types
+```
+
+### Feature modules
+
+Each feature is a vertical slice that owns its own UI, data hooks, and types:
+
+```
+features/<feature>/
+├── components/   # Feature UI
+├── hooks/        # Data fetching & feature state
+├── types/        # Feature-local types
+└── index.ts      # Public API — the only entry point other code imports
+```
+
+A feature's `index.ts` re-exports its sub-barrels (`components`, `hooks`, `types`). Code outside a feature imports **only** from `@/features/<feature>`; it must not reach into a feature's internal files. Shared code (under `components/`, `hooks/`, `lib/`, …) must not import from a feature, keeping dependencies pointing one way: `app → features → shared`.
+
+### Barrels and public APIs
+
+Every module directory exposes a barrel `index.ts` that defines its public API. Import from the barrel (`@/components/ui`, `@/features/wallet`, `@/services`), not from deep paths. This keeps call sites stable when internal files are renamed or split.
+
+### Path aliases
+
+`tsconfig.json` maps `@/*` to the repo root, plus dedicated aliases for each layer so imports read by intent rather than by relative depth:
+
+| Alias | Resolves to |
+|-------|-------------|
+| `@/components/*` | `src/components/*` |
+| `@/features/*` | `src/features/*` |
+| `@/hooks/*` | `src/hooks/*` |
+| `@/services/*` | `src/services/*` |
+| `@/stores/*` | `src/stores/*` |
+| `@/lib/*` | `src/lib/*` |
+| `@/config/*`, `@/constants/*`, `@/types/*`, `@/utils/*` | matching `src/*` |
+
+### Import ordering
+
+`eslint-plugin-import` enforces a consistent order (`eslint.config.mjs`): Node built-ins, then external packages, then internal modules — with feature and component imports grouped first among internals — separated by blank lines and alphabetized. Run `npm run lint`; most ordering issues auto-fix with `eslint --fix`.
+
 ## Component hierarchy
 
 ```mermaid

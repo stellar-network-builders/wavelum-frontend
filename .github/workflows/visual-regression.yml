@@ -12,10 +12,6 @@ jobs:
   visual-regression:
     name: Playwright screenshot comparison
     runs-on: ubuntu-latest
-    # Informational until baselines exist in `e2e/visual-baselines/`.
-    # Once baselines are committed, remove `continue-on-error` to make this a
-    # required, blocking gate.
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
 
@@ -32,6 +28,14 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run visual regression tests
+        # Informational until OS-matched (Linux) baselines are committed to
+        # e2e/visual-baselines/. Playwright exits non-zero when a baseline is
+        # missing — it writes the actual screenshot but still fails the run — so
+        # keep this step non-blocking for now. To promote it to a required gate:
+        # generate baselines on Linux (`npm run test:e2e:update`, e.g. via the
+        # mcr.microsoft.com/playwright container or a CI job), commit the PNGs,
+        # then remove this `continue-on-error`.
+        continue-on-error: true
         run: npm run test:e2e
         env:
           NEXT_TELEMETRY_DISABLED: '1'

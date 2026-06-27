@@ -1,0 +1,9 @@
+# Lumina pre-commit hook
+# 1) Runs lint-staged to lint/format staged files (eslint --fix on ts/tsx/js/mjs).
+# 2) Runs npm audit at high severity for informational purposes. Audit does
+#    NOT block the commit so developers are not trapped by transitive
+#    vulnerabilities they cannot fix in this PR.
+
+npx --no-install lint-staged
+echo "→ npm audit (informational, non-blocking)"
+npm audit --audit-level=high || true
