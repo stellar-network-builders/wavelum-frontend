@@ -12,8 +12,6 @@ jobs:
   deploy-preview:
     name: Vercel preview deployment
     runs-on: ubuntu-latest
-    # Forks don't have access to secrets — skip to avoid guaranteed failures.
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     steps:
       - uses: actions/checkout@v4
 
