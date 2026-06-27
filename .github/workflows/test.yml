@@ -14,9 +14,12 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
-      - run: npm ci
+      - name: Install dependencies
+        # Retry to absorb the occasional esbuild postinstall ETXTBSY ("text file
+        # busy") race that intermittently fails `npm ci` on CI runners.
+        run: npm ci || { echo "npm ci failed, retrying in 5s..."; sleep 5; npm ci; } || { echo "npm ci failed, retrying in 10s..."; sleep 10; npm ci; }
       - run: npm run lint
       - run: npm run build
 
@@ -27,9 +30,12 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
-      - run: npm ci
+      - name: Install dependencies
+        # Retry to absorb the occasional esbuild postinstall ETXTBSY ("text file
+        # busy") race that intermittently fails `npm ci` on CI runners.
+        run: npm ci || { echo "npm ci failed, retrying in 5s..."; sleep 5; npm ci; } || { echo "npm ci failed, retrying in 10s..."; sleep 10; npm ci; }
       - name: Build for aXe audit
         run: npm run build
       - name: Check Tailwind color contrast
@@ -59,9 +65,12 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
-      - run: npm ci
+      - name: Install dependencies
+        # Retry to absorb the occasional esbuild postinstall ETXTBSY ("text file
+        # busy") race that intermittently fails `npm ci` on CI runners.
+        run: npm ci || { echo "npm ci failed, retrying in 5s..."; sleep 5; npm ci; } || { echo "npm ci failed, retrying in 10s..."; sleep 10; npm ci; }
       - name: Build Storybook
         run: npm run build-storybook
       - name: Publish Chromatic visual review
