@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations } from 'next-intl/server';
 
+import { WalletConnector, WalletProvider } from '@/features/wallet';
+
 import { ErrorBoundary } from '@/components/errors';
 import { LocaleSwitcher, ToastProvider } from '@/components/ui';
 
@@ -33,8 +35,13 @@ export default async function LocaleLayout({ children }: Props) {
     <NextIntlClientProvider messages={messages}>
       <ErrorBoundary>
         <ToastProvider>
-          <LocaleSwitcher />
-          {children}
+          <WalletProvider>
+            <div className="flex items-center justify-end gap-3 p-4">
+              <LocaleSwitcher />
+              <WalletConnector />
+            </div>
+            {children}
+          </WalletProvider>
         </ToastProvider>
       </ErrorBoundary>
     </NextIntlClientProvider>

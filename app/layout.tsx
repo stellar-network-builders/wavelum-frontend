@@ -3,8 +3,9 @@ import { Geist, Geist_Mono } from 'next/font/google';
 
 import { AriaLiveRegion, SkipLink, WebVitals } from '@/components/ui';
 
-import { QueryProvider, WalletProvider } from '@/src/providers';
+import { QueryProvider } from '@/src/providers/QueryProvider';
 import { ThemeProvider } from '@/src/providers/ThemeProvider';
+import { WalletProvider } from '@/features/wallet';
 import './globals.css';
 
 /**
