@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 
 import { AriaLiveRegion, SkipLink, WebVitals } from '@/components/ui';
 
-import { QueryProvider } from '@/src/providers/QueryProvider';
+import { QueryProvider, WalletProvider } from '@/src/providers';
 import { ThemeProvider } from '@/src/providers/ThemeProvider';
 import './globals.css';
 
@@ -49,11 +49,13 @@ export default function RootLayout({
         <AriaLiveRegion />
         <WebVitals />
         <ThemeProvider>
-          <QueryProvider>
-            <div id="main-content" role="main">
-              {children}
-            </div>
-          </QueryProvider>
+          <WalletProvider>
+            <QueryProvider>
+              <div id="main-content" role="main">
+                {children}
+              </div>
+            </QueryProvider>
+          </WalletProvider>
         </ThemeProvider>
       </body>
     </html>
