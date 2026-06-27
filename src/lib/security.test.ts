@@ -78,7 +78,6 @@ describe('validateRedirectUrl', () => {
 
   it('returns false when allowedOrigin missing and window undefined', () => {
     const originalWindow = globalThis.window;
-    // @ts-expect-error - Test-only mutation
     delete (globalThis as unknown as { window?: unknown }).window;
     expect(validateRedirectUrl('/dashboard')).toBe(false);
     if (originalWindow !== undefined) {
@@ -203,7 +202,6 @@ describe('sanitizeHtml', () => {
 });
 
 describe('safeLog', () => {
-  const originalEnv = process.env.NODE_ENV;
   const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
   beforeEach(() => {
@@ -212,12 +210,11 @@ describe('safeLog', () => {
   });
 
   afterEach(() => {
-    process.env.NODE_ENV = originalEnv;
+    vi.unstubAllEnvs();
   });
 
   it('is a no-op when window is undefined', () => {
     const originalWindow = globalThis.window;
-    // @ts-expect-error - test only
     delete (globalThis as unknown as { window?: Window }).window;
     safeLog('hi', { token: 'x' });
     expect(logSpy).not.toHaveBeenCalled();
@@ -231,7 +228,7 @@ describe('safeLog', () => {
   });
 
   it('redacts keys in production', () => {
-    process.env.NODE_ENV = 'production';
+    vi.stubEnv('NODE_ENV', 'production');
     safeLog('test', { token: 'abc', user: 'bob' });
     expect(logSpy).toHaveBeenCalledWith('test', {
       token: '[REDACTED]',
@@ -240,13 +237,13 @@ describe('safeLog', () => {
   });
 
   it('passes object through in development', () => {
-    process.env.NODE_ENV = 'development';
+    vi.stubEnv('NODE_ENV', 'development');
     safeLog('test', { token: 'abc', user: 'bob' });
     expect(logSpy).toHaveBeenCalledWith('test', { token: 'abc', user: 'bob' });
   });
 
   it('handles array inputs in production', () => {
-    process.env.NODE_ENV = 'production';
+    vi.stubEnv('NODE_ENV', 'production');
     safeLog('arr', [{ token: 'x', user: 'bob' }, { password: 'p' }]);
     expect(logSpy).toHaveBeenCalledWith('arr', [
       { token: '[REDACTED]', user: 'bob' },

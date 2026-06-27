@@ -1,0 +1,49 @@
+name: Visual Regression
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+concurrency:
+  group: visual-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  visual-regression:
+    name: Playwright screenshot comparison
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run visual regression tests
+        # Informational until OS-matched (Linux) baselines are committed to
+        # e2e/visual-baselines/. Playwright exits non-zero when a baseline is
+        # missing — it writes the actual screenshot but still fails the run — so
+        # keep this step non-blocking for now. To promote it to a required gate:
+        # generate baselines on Linux (`npm run test:e2e:update`, e.g. via the
+        # mcr.microsoft.com/playwright container or a CI job), commit the PNGs,
+        # then remove this `continue-on-error`.
+        continue-on-error: true
+        run: npm run test:e2e
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          if-no-files-found: ignore

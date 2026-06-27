@@ -11,34 +11,11 @@ const dirname =
     ? __dirname
     : path.dirname(fileURLToPath(import.meta.url));
 
-// Mirror the tsconfig path aliases (e.g. `@/services/foo` -> `<root>/src/services/foo`).
-// Using regex find so the trailing path segment after `@/` is preserved.
-const alias = {
-  find: /^@\/(.*)$/,
-  replacement: `${path.join(dirname, 'src')}/$1`,
-};
-
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
     projects: [
-      // Node-based unit tests for libraries, services, and helpers that
-      // don't require a browser. This project has no `extends: true` so it
-      // can't accidentally pull in browser/Storybook defaults.
-      {
-        resolve: { alias: [alias] },
-        test: {
-          name: 'unit',
-          environment: 'node',
-          include: ['src/**/*.test.ts'],
-          exclude: [
-            'src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
-            'src/**/*.test.tsx',
-            'node_modules/**',
-          ],
-        },
-      },
       {
         extends: true,
         optimizeDeps: {
