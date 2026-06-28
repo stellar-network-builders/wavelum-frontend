@@ -10,6 +10,7 @@
     "lint": "eslint",
     "test": "vitest run --project=unit",
     "test:watch": "vitest --project=unit",
+    "test:unit": "vitest run --config vitest.unit.config.ts",
     "generate:types": "openapi-typescript $NEXT_PUBLIC_API_URL/openapi.json --output src/types/api.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
@@ -26,6 +27,7 @@
     "@radix-ui/react-toast": "^1.2.17",
     "@radix-ui/react-tooltip": "^1.2.10",
     "@sentry/nextjs": "^10.60.0",
+    "@stellar/freighter-api": "^6.0.1",
     "@stellar/stellar-base": "^15.0.0",
     "@stellar/stellar-sdk": "^16.0.1",
     "@tanstack/react-query": "^5.101.1",
