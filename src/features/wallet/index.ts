@@ -1,17 +1,33 @@
 /**
  * Wallet Feature Module
  *
- * Everything specific to wallet connection and Stellar account authentication
- * (Freighter / Wallet SDK integration, SEP-10).
- *
- * Internal layout:
- * - `components/` — feature UI
- * - `hooks/`      — connection & signing hooks
- * - `types/`      — feature-local types
- *
- * Only what's re-exported below is the feature's public API. Import it from
- * `@/features/wallet`; reach into internal files only from within the feature.
+ * Stellar wallet connection (Freighter) and SEP-10 authentication.
+ * Import from `@/features/wallet` to access the module's public API.
  */
-export * from './components';
-export * from './hooks';
-export * from './types';
+
+export { WalletProvider, WalletContext } from './WalletProvider';
+export type { WalletContextValue } from './WalletProvider';
+export { useWallet } from './useWallet';
+export { WalletConnector } from './WalletConnector';
+export { WalletDropdown } from './WalletDropdown';
+export { WalletConnectionError } from './types';
+export type { WalletNetwork, WalletConnectionStatus } from './types';
+
+// Framework-agnostic core (also useful for tests / non-React consumers).
+export {
+  detectWallet,
+  isWalletAllowed,
+  getActiveAddress,
+  getActiveNetwork,
+  requestPublicKey,
+  signTransactionXdr,
+  mapFreighterNetwork,
+  watchWallet,
+} from './walletClient';
+export {
+  runSep10Flow,
+  requestSep10Challenge,
+  submitSep10Challenge,
+  decodeJwtExpiry,
+  isJwtExpired,
+} from './sep10';
