@@ -9,6 +9,8 @@ import { LocaleSwitcher, ToastProvider } from '@/components/ui';
 
 import { routing } from '@/i18n/routing';
 
+import { ApiClientProvider } from '@/src/providers/ApiClientProvider';
+
 type Props = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -35,13 +37,15 @@ export default async function LocaleLayout({ children }: Props) {
     <NextIntlClientProvider messages={messages}>
       <ErrorBoundary>
         <ToastProvider>
-          <WalletProvider>
-            <div className="flex items-center justify-end gap-3 p-4">
-              <LocaleSwitcher />
-              <WalletConnector />
-            </div>
-            {children}
-          </WalletProvider>
+          <ApiClientProvider>
+            <WalletProvider>
+              <div className="flex items-center justify-end gap-3 p-4">
+                <LocaleSwitcher />
+                <WalletConnector />
+              </div>
+              {children}
+            </WalletProvider>
+          </ApiClientProvider>
         </ToastProvider>
       </ErrorBoundary>
     </NextIntlClientProvider>
