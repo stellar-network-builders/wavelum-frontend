@@ -1,0 +1,7 @@
+# Playwright visual regression baselines.
+#
+# Commit the generated `*.png` snapshots in this directory. Generate them with:
+#
+#     npm run test:e2e:update
+#
+# CI compares PR screenshots against these baselines (1% pixel threshold).

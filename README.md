@@ -2,7 +2,7 @@
 
 Next.js 16 web application for the Lumina Network, a blockchain-based vesting vault and token streaming platform built on Stellar Soroban.
 
-[![Build](https://github.com/stellar-network-builders/lumina-frontend/actions/workflows/test.yml/badge.svg)](https://github.com/stellar-network-builders/lumina-frontend/actions/workflows/test.yml)
+[![CI](https://github.com/real-venus/wavelum-frontend/actions/workflows/test.yml/badge.svg)](https://github.com/real-venus/wavelum-frontend/actions/workflows/test.yml)
 
 ## Overview
 
@@ -93,6 +93,27 @@ See the [Next.js environment variables guide](https://nextjs.org/docs/app/buildi
 | `npm run build` | Create an optimized production build. |
 | `npm start` | Serve the production build (run `npm run build` first). |
 | `npm run lint` | Run ESLint across the project. |
+| `npm run lint:strict` | Run ESLint failing on any warning (`--max-warnings 0`). |
+| `npm run typecheck` | Type-check the project with `tsc --noEmit`. |
+| `npm run test` | Run the Vitest unit/component suite once. |
+| `npm run test:coverage` | Run the test suite with coverage reporting. |
+| `npm run test:e2e` | Run Playwright visual regression tests. |
+| `npm run test:e2e:update` | Regenerate Playwright visual baselines. |
+
+## Continuous integration
+
+Every push to `main` and every pull request runs the [CI workflow](.github/workflows/test.yml):
+
+- **quality** — ESLint, TypeScript type-check, and a production Next.js build (with `.next/cache` reuse).
+- **test** — Vitest unit/component tests in headless Chromium, with coverage uploaded as an artifact.
+- **bundle-analysis** (PRs) — builds with `@next/bundle-analyzer` and uploads the treemap reports.
+- **accessibility** — Tailwind color-contrast audit (WCAG AA).
+- **visual-review** — Storybook component snapshots via Chromatic.
+
+Two companion workflows run on pull requests:
+
+- [Visual Regression](.github/workflows/visual-regression.yml) — Playwright screenshot comparison against baselines in `e2e/visual-baselines/` (1% diff threshold). Generate baselines with `npm run test:e2e:update` and commit them; then drop `continue-on-error` to make it a blocking gate.
+- [Deploy Preview](.github/workflows/deploy-preview.yml) — deploys a Vercel preview and comments the URL on the PR (skipped automatically when `VERCEL_TOKEN` is absent).
 
 ## Project structure
 
