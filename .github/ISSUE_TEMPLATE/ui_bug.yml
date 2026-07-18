@@ -1,0 +1,84 @@
+name: UI bug
+description: Report a visual, responsive, or interaction problem
+title: "[UI Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        UI reports are most actionable when they include the affected component, viewport, and a screenshot.
+
+  - type: input
+    id: component
+    attributes:
+      label: Component or page
+      description: Which component, route, dialog, or workflow is affected?
+      placeholder: Dashboard vesting card on /dashboard
+    validations:
+      required: true
+
+  - type: input
+    id: screen_size
+    attributes:
+      label: Screen size
+      description: Provide the viewport width and height, plus device name when relevant.
+      placeholder: 390x844 (iPhone 15) or 1440x900
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Edge
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the exact interactions needed to reproduce the UI problem.
+      placeholder: |
+        1. Open ...
+        2. Resize or select ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected appearance or behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual appearance or behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or recordings
+      description: Add a visual comparison if possible. Remove sensitive account or wallet information first.
+      placeholder: Drag and drop screenshots or recordings here.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submission checks
+      options:
+        - label: I confirmed the issue still occurs after refreshing the page.
+          required: true
+        - label: I searched existing issues and did not find a duplicate.
+          required: true

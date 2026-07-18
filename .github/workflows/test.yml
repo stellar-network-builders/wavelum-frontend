@@ -13,6 +13,26 @@ concurrency:
 
 jobs:
   # ───────────────────────────────────────────────────────────────────────────
+  # GitHub Issue Forms must remain parseable and structurally complete.
+  # ───────────────────────────────────────────────────────────────────────────
+  validate-templates:
+    name: Validate issue templates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Validate Issue Forms and YAML syntax
+        run: ruby scripts/validate-issue-templates.rb
+
+      - name: Test the validator against malformed templates
+        run: ruby scripts/validate-issue-templates-test.rb
+
+  # ───────────────────────────────────────────────────────────────────────────
   # Lint, type-check, and production build verification.
   # ───────────────────────────────────────────────────────────────────────────
   quality:

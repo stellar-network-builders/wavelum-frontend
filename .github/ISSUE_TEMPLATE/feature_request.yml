@@ -1,0 +1,50 @@
+name: Feature request
+description: Propose an improvement to the Wavelum frontend
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the user problem first so the proposal can be evaluated against concrete needs.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user need, limitation, or workflow gap should this feature address?
+      placeholder: As a user, I need ... because ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: Proposed solution
+      description: Explain the desired behavior and how it improves the current experience.
+      placeholder: Describe the proposed interaction, output, or API behavior.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What other approaches or workarounds have you considered?
+      placeholder: Describe alternatives, or write "None" if there are no known alternatives.
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional context
+      description: Add mockups, examples, related issues, or other useful background.
+      placeholder: Drag and drop supporting images or add links here.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submission checks
+      options:
+        - label: I searched existing issues and did not find an equivalent request.
+          required: true
