@@ -13,6 +13,39 @@ concurrency:
 
 jobs:
   # ───────────────────────────────────────────────────────────────────────────
+  # Every shared component must have a Storybook story. The threshold can be
+  # raised each sprint with STORYBOOK_COVERAGE_THRESHOLD (50% starting point,
+  # 90% target).
+  # ───────────────────────────────────────────────────────────────────────────
+  storybook-coverage:
+    name: Storybook component coverage
+    runs-on: ubuntu-latest
+    env:
+      STORYBOOK_COVERAGE_THRESHOLD: '50'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check Storybook coverage and generate inventory
+        run: npm run storybook:check-coverage
+
+      - name: Upload Storybook inventory report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-coverage-inventory
+          path: reports/storybook-coverage.md
+          if-no-files-found: error
+
+  # ───────────────────────────────────────────────────────────────────────────
   # GitHub Issue Forms must remain parseable and structurally complete.
   # ───────────────────────────────────────────────────────────────────────────
   validate-templates:
