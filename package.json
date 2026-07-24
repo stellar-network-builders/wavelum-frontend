@@ -18,7 +18,8 @@
     "test:e2e:update": "playwright test --update-snapshots",
     "generate:types": "openapi-typescript $NEXT_PUBLIC_API_URL/openapi.json --output src/types/api.ts",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "storybook:check-coverage": "node scripts/check-storybook-coverage.mjs"
   },
   "engines": {
     "node": ">=20.9.0"
