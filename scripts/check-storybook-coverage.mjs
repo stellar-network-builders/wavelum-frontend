@@ -31,7 +31,7 @@ const sourceFiles = files
 
 const stories = new Set(
   files
-    .filter((file) => /\.stories\.(tsx|ts|jsx|js|mjs)$/.test(file))
+    .filter((file) => /\.stories\.[^.]+$/.test(file))
     .map((file) => file.replace(/\.stories\.[^.]+$/, '')),
 );
 
