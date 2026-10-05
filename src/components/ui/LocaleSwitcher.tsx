@@ -1,13 +1,14 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
-import { useTransition } from 'react';
+import { useId, useTransition } from 'react';
 
 import { useAnnounce } from '@/hooks/useAnnounce';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 
 export function LocaleSwitcher() {
+  const selectId = useId();
   const t = useTranslations('LocaleSwitcher');
   const locale = useLocale();
   const pathname = usePathname();
@@ -32,11 +33,11 @@ export function LocaleSwitcher() {
 
   return (
     <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
-      <label htmlFor="locale-switcher" className="sr-only">
+      <label htmlFor={selectId} className="sr-only">
         {t('label')}
       </label>
       <select
-        id="locale-switcher"
+        id={selectId}
         value={locale}
         onChange={(e) => onSelectChange(e.target.value)}
         disabled={isPending}
