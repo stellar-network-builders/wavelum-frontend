@@ -74,17 +74,9 @@ export function useSkipLink() {
 
   const handleSkip = useCallback((e: React.MouseEvent | React.KeyboardEvent) => {
     e.preventDefault();
-    const main = document.querySelector('main');
+    const main = document.getElementById('main-content');
     if (main) {
-      main.setAttribute('tabindex', '-1');
       main.focus();
-      main.addEventListener(
-        'blur',
-        () => {
-          main.removeAttribute('tabindex');
-        },
-        { once: true },
-      );
     }
   }, []);
 
