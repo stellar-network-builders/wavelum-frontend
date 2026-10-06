@@ -22,5 +22,16 @@ export default defineConfig({
       // so this case fails. Tracked separately from the wallet work.
       'src/services/soroban/errors.test.ts',
     ],
+    coverage: {
+      provider: 'v8',
+      reportsDirectory: 'coverage/unit',
+      reporter: ['text', 'html', 'lcov', 'json-summary'],
+      thresholds: {
+        lines: 70,
+        branches: 60,
+        functions: 65,
+        statements: 70,
+      },
+    },
   },
 });

@@ -13,7 +13,7 @@
     "test": "vitest run",
     "test:watch": "vitest --project=unit",
     "test:coverage": "vitest run --coverage",
-    "test:unit": "vitest run --config vitest.unit.config.ts",
+    "test:unit": "vitest run --config vitest.unit.config.ts --coverage",
     "test:e2e": "playwright test",
     "test:e2e:update": "playwright test --update-snapshots",
     "generate:types": "openapi-typescript $NEXT_PUBLIC_API_URL/openapi.json --output src/types/api.ts",
