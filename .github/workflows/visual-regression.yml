@@ -2,7 +2,12 @@ name: Visual Regression
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
 
 concurrency:
   group: visual-${{ github.workflow }}-${{ github.ref }}
@@ -11,39 +16,64 @@ concurrency:
 jobs:
   visual-regression:
     name: Playwright screenshot comparison
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
-
+          node-version-file: .nvmrc
+          cache: npm
       - name: Install dependencies
         run: npm ci
-
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
-
-      - name: Run visual regression tests
-        # Informational until OS-matched (Linux) baselines are committed to
-        # e2e/visual-baselines/. Playwright exits non-zero when a baseline is
-        # missing — it writes the actual screenshot but still fails the run — so
-        # keep this step non-blocking for now. To promote it to a required gate:
-        # generate baselines on Linux (`npm run test:e2e:update`, e.g. via the
-        # mcr.microsoft.com/playwright container or a CI job), commit the PNGs,
-        # then remove this `continue-on-error`.
-        continue-on-error: true
-        run: npm run test:e2e
+      - name: Require committed Linux baseline
+        run: test -f e2e/visual-baselines/visual/home.spec.ts-snapshots/home-chromium-linux.png
+      - name: Compare screenshots (1% maximum difference)
+        run: npx playwright test e2e/visual --project=chromium
         env:
           NEXT_TELEMETRY_DISABLED: '1'
-
-      - name: Upload Playwright report
+      - name: Upload visual comparison report and images
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
-          path: playwright-report/
-          if-no-files-found: ignore
+          name: visual-regression-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: warn
+          retention-days: 14
+
+  storybook:
+    name: Storybook and Chromatic
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Build Storybook
+        run: npm run build-storybook
+      - name: Publish Chromatic comparison
+        env:
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        run: |
+          if [ -z "$CHROMATIC_PROJECT_TOKEN" ]; then
+            echo "::notice::Chromatic publication requires the maintainer's project token; the Playwright gate still runs."
+            exit 0
+          fi
+          npx chromatic --project-token="$CHROMATIC_PROJECT_TOKEN" --storybook-build-dir=storybook-static
+      - name: Upload Storybook build
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-storybook
+          path: storybook-static/
+          if-no-files-found: warn
+          retention-days: 14

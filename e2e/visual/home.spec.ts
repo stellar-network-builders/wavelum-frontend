@@ -8,11 +8,23 @@ import { test, expect } from '@playwright/test';
  * PNGs. CI fails when the rendered page differs from its baseline by more than
  * the 1% pixel threshold configured in `playwright.config.ts`.
  */
+test.use({
+  viewport: { width: 1280, height: 720 },
+  colorScheme: 'light',
+  locale: 'en-US',
+  timezoneId: 'UTC',
+  reducedMotion: 'reduce',
+});
+
 test.describe('Visual regression', () => {
   test('home page matches baseline', async ({ page }) => {
-    await page.goto('/');
-    // Wait for the network to settle so fonts/assets are painted.
-    await page.waitForLoadState('networkidle');
+    await page.goto('/en');
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    // Wait for actual render assets, without depending on background requests.
+    await page.evaluate(async () => {
+      await document.fonts.ready;
+      await Promise.all(Array.from(document.images, (image) => image.decode()));
+    });
     await expect(page).toHaveScreenshot('home.png', { fullPage: true });
   });
 });

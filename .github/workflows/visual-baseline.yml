@@ -1,0 +1,32 @@
+name: Generate Visual Baseline
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Generate reviewed Linux baseline
+        run: npx playwright test e2e/visual --project=chromium --update-snapshots
+        env:
+          CI: 'true'
+          NEXT_TELEMETRY_DISABLED: '1'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-visual-baseline
+          path: e2e/visual-baselines/**/*.png
+          if-no-files-found: error
+      # This workflow never writes/accepts baselines automatically. Review its
+      # PNG artifact, commit it, and let the blocking comparison run normally.

@@ -1,0 +1,38 @@
+name: Visual Regression PR Report
+
+on:
+  workflow_run:
+    workflows: [Visual Regression]
+    types: [completed]
+
+permissions:
+  actions: read
+  pull-requests: write
+
+jobs:
+  report:
+    if: github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      # Read GitHub run metadata only: no PR checkout or artifact code executes.
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const run = context.payload.workflow_run;
+            const marker = '<!-- visual-regression-report -->';
+            for (const pr of run.pull_requests) {
+              const { data: current } = await github.rest.pulls.get({
+                ...context.repo, pull_number: pr.number,
+              });
+              if (current.head.sha !== run.head_sha) continue;
+              const body = `${marker}\n**Visual regression: ${run.conclusion}**\n\n[Open the comparison run and visual-regression-report artifact](${run.html_url}). The artifact contains the HTML report and expected/actual/diff images when differences are found. Maximum differing pixels: 1%.`;
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                ...context.repo, issue_number: pr.number,
+              });
+              const previous = comments.find(c => c.user.login === 'github-actions[bot]' && c.body?.startsWith(marker));
+              if (previous) {
+                await github.rest.issues.updateComment({ ...context.repo, comment_id: previous.id, body });
+              } else {
+                await github.rest.issues.createComment({ ...context.repo, issue_number: pr.number, body });
+              }
+            }

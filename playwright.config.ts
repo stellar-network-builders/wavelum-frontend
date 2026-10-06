@@ -19,7 +19,9 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: process.env.CI ? [['html', { open: 'never' }], ['github']] : 'html',
+  reporter: process.env.CI
+    ? [['html', { open: 'never' }], ['json', { outputFile: 'test-results/visual-results.json' }], ['github']]
+    : 'html',
 
   expect: {
     // Fail when more than 1% of pixels differ from the baseline.
