@@ -21,7 +21,8 @@
     "build-storybook": "storybook build",
     "storybook:check-coverage": "node scripts/check-storybook-coverage.mjs",
     "check:bundle-budgets": "node scripts/check-bundle-budgets.mjs",
-    "check:links": "node scripts/check-links.mjs"
+    "check:links": "node scripts/check-links.mjs",
+    "i18n:check": "node scripts/check-i18n.mjs"
   },
   "engines": {
     "node": ">=20.9.0"
