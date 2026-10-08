@@ -23,15 +23,15 @@ const eslintConfig = defineConfig([
     },
     rules: {
       "import/order": [
-        "warn",
+        "error",
         {
           "groups": [
             "builtin",
             "external",
             "internal",
-            "parent",
-            "sibling",
-            "index"
+            ["parent", "sibling", "index"],
+            "type",
+            "unknown"
           ],
           "pathGroups": [
             { "pattern": "@/features/**", "group": "internal", "position": "before" },
@@ -46,7 +46,8 @@ const eslintConfig = defineConfig([
             { "pattern": "@/lib/**", "group": "internal" },
             { "pattern": "@/i18n/**", "group": "internal" },
             { "pattern": "@/messages/**", "group": "internal" },
-            { "pattern": "@/**", "group": "internal", "position": "after" }
+            { "pattern": "@/**", "group": "internal", "position": "after" },
+            { "pattern": "**/*.{css,scss,sass,less}", "group": "unknown", "position": "after" }
           ],
           "newlines-between": "always",
           "alphabetize": { "order": "asc", "caseInsensitive": true }

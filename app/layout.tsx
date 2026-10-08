@@ -1,10 +1,11 @@
-import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
 import { AriaLiveRegion, SkipLink, WebVitals } from '@/components/ui';
-
 import { QueryProvider } from '@/src/providers/QueryProvider';
 import { ThemeProvider } from '@/src/providers/ThemeProvider';
+
+import type { Metadata } from 'next';
+
 import './globals.css';
 
 /**
