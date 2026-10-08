@@ -12,6 +12,7 @@ import {
 
 import { useToast } from '@/components/ui';
 
+import { getPublicEnv } from '@/src/lib/env';
 import { useAuthStore } from '@/src/stores/authStore';
 import type { WalletStatus } from '@/src/types/domain';
 
@@ -51,11 +52,8 @@ export const WalletContext = createContext<WalletContextValue | null>(null);
 
 /* ─── Helpers ────────────────────────────────────────────────────────────── */
 
-const VALID_NETWORKS: WalletNetwork[] = ['testnet', 'mainnet', 'futurenet'];
-
 function envTargetNetwork(): WalletNetwork {
-  const env = process.env.NEXT_PUBLIC_NETWORK as WalletNetwork | undefined;
-  return env && VALID_NETWORKS.includes(env) ? env : 'testnet';
+  return getPublicEnv().NEXT_PUBLIC_SOROBAN_NETWORK;
 }
 
 /* ─── Provider ───────────────────────────────────────────────────────────── */

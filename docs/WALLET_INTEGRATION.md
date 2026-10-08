@@ -54,7 +54,7 @@ The active network is read from environment variables:
 
 | Variable | Purpose |
 |----------|---------|
-| `NEXT_PUBLIC_NETWORK` | `testnet`, `futurenet`, or `mainnet`. |
+| `NEXT_PUBLIC_SOROBAN_NETWORK` | `testnet`, `futurenet`, or `mainnet`. |
 | `NEXT_PUBLIC_SOROBAN_RPC_URL` | RPC endpoint for the active network. |
 
 Each network has its own [network passphrase](https://developers.stellar.org/docs/learn/fundamentals/networks). The passphrase is required when building and signing transactions so a signature for one network cannot be replayed on another:
@@ -67,7 +67,7 @@ Each network has its own [network passphrase](https://developers.stellar.org/doc
 
 ### Network mismatch
 
-If the wallet is set to a different network than `NEXT_PUBLIC_NETWORK`, the app should block signing and prompt the user to switch. Treat any change in the wallet's selected network as a reason to clear the current session and return to the Disconnected state.
+If the wallet is set to a different network than `NEXT_PUBLIC_SOROBAN_NETWORK`, the app should block signing and prompt the user to switch. Treat any change in the wallet's selected network as a reason to clear the current session and return to the Disconnected state.
 
 ## Security notes
 

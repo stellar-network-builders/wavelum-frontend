@@ -4,7 +4,7 @@ This document describes how Lumina Frontend talks to the backend API: the Axios 
 
 ## Configuration
 
-The API base URL comes from `NEXT_PUBLIC_API_URL` (default `http://localhost:4000`). All requests are made relative to this base.
+The API base URL comes from `NEXT_PUBLIC_API_URL`. Next.js validates that required public environment variables are present before compilation; `.env.example` uses `http://localhost:4000` for local development. All requests are made relative to this base.
 
 ## Architecture
 

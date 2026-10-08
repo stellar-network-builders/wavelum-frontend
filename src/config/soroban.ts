@@ -8,6 +8,8 @@
 
 import { Networks } from '@stellar/stellar-sdk';
 
+import { getPublicEnv } from '../lib/env';
+
 /* ─── Contract Addresses ─────────────────────────────────────────────────── */
 
 /**
@@ -67,15 +69,15 @@ export const SOROBAN_CONFIG: Record<string, SorobanNetworkConfig> = {
 export type SorobanNetwork = keyof typeof SOROBAN_CONFIG;
 
 export function getSorobanNetwork(): SorobanNetwork {
-  const env = process.env.NEXT_PUBLIC_SOROBAN_NETWORK;
-  if (env && env in SOROBAN_CONFIG) {
-    return env as SorobanNetwork;
-  }
-  return 'testnet';
+  return getPublicEnv().NEXT_PUBLIC_SOROBAN_NETWORK;
 }
 
 export function getSorobanConfig(): SorobanNetworkConfig {
-  return SOROBAN_CONFIG[getSorobanNetwork()];
+  const env = getPublicEnv();
+  return {
+    ...SOROBAN_CONFIG[env.NEXT_PUBLIC_SOROBAN_NETWORK],
+    rpcUrl: env.NEXT_PUBLIC_SOROBAN_RPC_URL,
+  };
 }
 
 export function getContractAddress(name: ContractName): string {

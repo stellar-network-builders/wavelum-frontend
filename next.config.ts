@@ -3,6 +3,11 @@ import { withSentryConfig } from '@sentry/nextjs';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
+import { validatePublicEnv } from './src/lib/env';
+
+// Fail before compilation when required public configuration is absent or invalid.
+validatePublicEnv();
+
 const withBundleAnalyzer = createBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 });

@@ -10,13 +10,13 @@
  * @see https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0010.md
  */
 
-const DEFAULT_API_URL = 'http://localhost:4000';
-const DEFAULT_AUTH_PATH = '/auth/sep10';
+import { getPublicEnv } from '../../lib/env';
 
 function authEndpoint(): string {
-  const base = process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL;
-  const path = process.env.NEXT_PUBLIC_SEP10_AUTH_PATH ?? DEFAULT_AUTH_PATH;
-  return `${base}${path}`;
+  const env = getPublicEnv();
+  // Keep any configured API prefix while avoiding a double separator when
+  // NEXT_PUBLIC_API_URL already ends with '/'.
+  return `${env.NEXT_PUBLIC_API_URL.replace(/\/+$/, '')}${env.NEXT_PUBLIC_SEP10_AUTH_PATH}`;
 }
 
 export type Sep10Challenge = {
@@ -40,8 +40,9 @@ export type ChallengeSigner = (
 
 /** Step 1 — fetch the unsigned SEP-10 challenge for an account. */
 export async function requestSep10Challenge(account: string): Promise<Sep10Challenge> {
-  const url = `${authEndpoint()}?account=${encodeURIComponent(account)}`;
-  const response = await fetch(url, { headers: { Accept: 'application/json' } });
+  const url = new URL(authEndpoint());
+  url.searchParams.set('account', account);
+  const response = await fetch(url.toString(), { headers: { Accept: 'application/json' } });
 
   if (!response.ok) {
     throw new Error(`SEP-10 challenge request failed (${response.status}).`);
