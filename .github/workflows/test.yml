@@ -205,11 +205,12 @@ jobs:
         run: node scripts/check-links.mjs
 
   # ───────────────────────────────────────────────────────────────────────────
-  # Accessibility: Tailwind color-contrast audit (WCAG AA).
+  # Accessibility: blocking Playwright + axe WCAG A/AA audit across locales.
   # ───────────────────────────────────────────────────────────────────────────
   accessibility:
     name: Accessibility audit
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -222,26 +223,25 @@ jobs:
       - name: Install dependencies
         run: npm ci || { echo "npm ci failed, retrying in 5s..."; sleep 5; npm ci; } || { echo "npm ci failed, retrying in 10s..."; sleep 10; npm ci; }
 
-      - name: Check Tailwind color contrast
-        run: |
-          npx @accessibility/contrast --config '{
-            "colors": {
-              "zinc-50": "#fafafa",
-              "zinc-100": "#f4f4f5",
-              "zinc-200": "#e4e4e7",
-              "zinc-300": "#d4d4d8",
-              "zinc-400": "#a1a1aa",
-              "zinc-500": "#71717a",
-              "zinc-600": "#52525b",
-              "zinc-700": "#3f3f3f",
-              "zinc-900": "#18181b",
-              "black": "#000000",
-              "white": "#ffffff"
-            },
-            "backgrounds": ["#ffffff", "#0a0a0a", "#18181b", "#fafafa"],
-            "level": "AA"
-          }' || echo "Color contrast check skipped (tool may not be available)"
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
 
+      - name: Run WCAG and keyboard-flow audits
+        run: npm run test:a11y
+        env:
+          CI: 'true'
+          NEXT_TELEMETRY_DISABLED: '1'
+
+      - name: Upload accessibility report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 30
+          if-no-files-found: warn
   # ───────────────────────────────────────────────────────────────────────────
   # Lighthouse CI: performance, accessibility, best-practices, and SEO audits
   # with score budgets. Runs on all key locale routes. Fails if any category

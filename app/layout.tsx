@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { getLocale } from 'next-intl/server';
 
 import { AriaLiveRegion, SkipLink, WebVitals } from '@/components/ui';
 
@@ -32,13 +33,15 @@ export const metadata: Metadata = {
   description: 'Blockchain-based vesting vault and token streaming on Stellar Soroban',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
@@ -50,7 +53,7 @@ export default function RootLayout({
         <WebVitals />
         <ThemeProvider>
           <QueryProvider>
-            <div id="main-content" role="main">
+            <div>
               {children}
             </div>
           </QueryProvider>
