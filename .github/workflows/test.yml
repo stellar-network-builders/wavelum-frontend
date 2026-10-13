@@ -20,6 +20,7 @@ jobs:
   storybook-coverage:
     name: Storybook component coverage
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     env:
       STORYBOOK_COVERAGE_THRESHOLD: '50'
     steps:
@@ -51,6 +52,7 @@ jobs:
   validate-templates:
     name: Validate issue templates
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -71,6 +73,7 @@ jobs:
   quality:
     name: Lint, type-check & build
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -119,6 +122,7 @@ jobs:
   test:
     name: Unit & component tests
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -131,9 +135,23 @@ jobs:
       - name: Install dependencies
         run: npm ci || { echo "npm ci failed, retrying in 5s..."; sleep 5; npm ci; } || { echo "npm ci failed, retrying in 10s..."; sleep 10; npm ci; }
 
+      - name: Cache Playwright browser binaries
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
       - name: Install Playwright Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         # Storybook browser tests run in real Chromium via Playwright.
         run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
 
       - name: Run tests with coverage
         run: npm run test:coverage
@@ -153,6 +171,7 @@ jobs:
   bundle-analysis:
     name: Bundle size analysis
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
@@ -165,6 +184,14 @@ jobs:
 
       - name: Install dependencies
         run: npm ci || { echo "npm ci failed, retrying in 5s..."; sleep 5; npm ci; } || { echo "npm ci failed, retrying in 10s..."; sleep 10; npm ci; }
+
+      - name: Restore Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.{js,jsx,ts,tsx}') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
       - name: Build with bundle analyzer
         run: npm run build
@@ -189,6 +216,7 @@ jobs:
   link-validation:
     name: Link & asset validation
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -210,6 +238,7 @@ jobs:
   accessibility:
     name: Accessibility audit
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -251,6 +280,7 @@ jobs:
   lighthouse-audit:
     name: Lighthouse CI
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -262,6 +292,14 @@ jobs:
 
       - name: Install dependencies
         run: npm ci || { echo "npm ci failed, retrying in 5s..."; sleep 5; npm ci; } || { echo "npm ci failed, retrying in 10s..."; sleep 10; npm ci; }
+
+      - name: Restore Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.{js,jsx,ts,tsx}') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
       - name: Build Next.js
         run: npm run build
@@ -316,6 +354,7 @@ jobs:
   visual-review:
     name: Storybook visual review (Chromatic)
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
