@@ -34,7 +34,6 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.env*
 !.env.example
 
 # vercel
@@ -49,3 +48,4 @@ storybook-static
 
 # husky internal state (resolved automatically; do not commit)
 .husky/_/
+config.bat
