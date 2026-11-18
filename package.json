@@ -4,9 +4,9 @@
   "private": true,
   "description": "Frontend for Lumina Network \u2014 blockchain-based vesting vault and token streaming on Stellar Soroban",
   "scripts": {
-    "dev": "node init && next dev",
-    "build": "node init && next build",
-    "start": "node init && next start",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "eslint",
     "lint:strict": "eslint --max-warnings 0",
     "typecheck": "tsc --noEmit",
@@ -18,7 +18,7 @@
     "test:e2e:update": "playwright test --update-snapshots",
     "generate:types": "openapi-typescript $NEXT_PUBLIC_API_URL/openapi.json --output src/types/api.ts",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "node init && storybook build",
+    "build-storybook": "storybook build",
     "storybook:check-coverage": "node scripts/check-storybook-coverage.mjs",
     "check:bundle-budgets": "node scripts/check-bundle-budgets.mjs",
     "check:links": "node scripts/check-links.mjs"
