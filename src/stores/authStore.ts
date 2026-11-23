@@ -1,3 +1,10 @@
+/**
+ * Client/session state only (wallet status, public key, in-memory token,
+ * profile). Server-derived data must live in TanStack Query, never here.
+ * See docs/STATE_MANAGEMENT.md for the state management decision tree.
+ *
+ * The JWT token is intentionally NOT persisted (see `partialize` below).
+ */
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 

@@ -1,6 +1,10 @@
 flowchart TD
     Q{Does it live<br/>outside the browser?}
     Q -->|Yes| RQ[React Query<br/>cache, refetch, invalidate]
-    Q -->|No| C{Shared across<br/>components?}
+    Q -->|No| F{Is it form input?}
+    F -->|Yes| RHF[React Hook Form + Zod<br/>validation & form state]
+    F -->|No| U{Is it in the URL?<br/>filters, pagination, tabs}
+    U -->|Yes| NAV[next/navigation<br/>useSearchParams / useRouter]
+    U -->|No| C{Shared across<br/>components?}
     C -->|Yes| Z[Zustand store]
-    C -->|No| L[Local useState]
+    C -->|No| L[Local useState / useReducer]

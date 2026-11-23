@@ -96,14 +96,11 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
       - name: Lint (ESLint)
-        run: npm run lint
-
-      - name: Lint — strict (warnings as errors, informational)
-        # The codebase still carries pre-existing lint warnings. This surfaces
-        # them without blocking merges; promote to a required gate once the
-        # warning count is driven to zero.
-        run: npm run lint:strict
-        continue-on-error: true
+        # Required gate. The state-management rules (issue #70) are enforced
+        # here: direct fetch/axios calls in components and prop drilling beyond
+        # three levels fail CI. `lint:ci` runs ESLint with warnings as errors so
+        # these violations cannot slip through.
+        run: npm run lint:ci
 
       - name: Type-check (tsc --noEmit)
         run: npm run typecheck

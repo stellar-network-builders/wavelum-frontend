@@ -11,6 +11,20 @@ type QueryProviderProps = {
   children: React.ReactNode;
 };
 
+/**
+ * QueryProvider
+ *
+ * Wires the shared TanStack Query `QueryClient` into the React tree and
+ * registers the in-memory auth token getter used by the axios client.
+ *
+ * State-management contract (see docs/STATE_MANAGEMENT.md):
+ * - All *server* state flows through React Query. Components must consume it
+ *   via query/mutation hooks (e.g. `useQuery`, `useMutation`, or the domain
+ *   hooks in `src/hooks`) rather than calling `fetch`/`axios` directly.
+ * - This provider is the single place that connects the QueryClient and the
+ *   auth token getter; it intentionally performs no data fetching itself.
+ */
+
 /*
  * JWT tokens live in-memory only (the auth store no longer persists them
  * to localStorage so XSS cannot exfiltrate them - see issue #26). The axios
