@@ -4,6 +4,20 @@
  * Provides a thin fetch wrapper with error handling, request/response
  * interceptors, and Soroban RPC helpers. Feature modules import from
  * here rather than calling fetch directly.
+ *
+ * ── Raw fetch policy ──────────────────────────────────────────────────────
+ * This module is the ONLY sanctioned location for raw `fetch` calls in the
+ * codebase. The `no-restricted-globals` / `no-restricted-syntax` ESLint
+ * rules that ban direct fetch usage ignore `src/services/**` for exactly
+ * this reason.
+ *
+ * Feature code MUST NOT call `fetch` directly. Instead, use one of:
+ *   - the typed service modules in `src/services/**`, or
+ *   - the React Query hooks that wrap them (server state).
+ *
+ * @deprecated Prefer `src/services/api/client.ts` for new integrations.
+ * This legacy `ApiClient` is retained for backwards compatibility only;
+ * new code should import the client from `src/services/api/client.ts`.
  */
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */

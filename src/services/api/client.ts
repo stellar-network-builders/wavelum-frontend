@@ -6,6 +6,12 @@
  * (`vestingService`, `authService`, …) which are built on the `http` helper
  * exported here.
  *
+ * Enforcement: an ESLint rule (`no-restricted-imports`) bans importing `axios`
+ * outside `src/services/**`. This file is the single Axios instance in the app;
+ * feature code must never import `axios` directly and must instead use the
+ * `http` helper below or the React Query hooks built on it — see
+ * `docs/STATE_MANAGEMENT.md` for the state management decision tree.
+ *
  * Features:
  * - Pre-configured base URL from `NEXT_PUBLIC_API_URL`
  * - JWT token injection via request interceptor (registered from the auth store)

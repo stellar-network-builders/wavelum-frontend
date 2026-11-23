@@ -2,6 +2,23 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import type { ThemePreference } from '@/src/types/domain';
 
+/**
+ * Global UI store (client state).
+ *
+ * This store intentionally holds only app-wide UI state: sidebar collapse,
+ * theme preference, and the currently active modal. See
+ * `docs/STATE_MANAGEMENT.md` for the state management decision tree:
+ * - Server state: TanStack Query
+ * - Client state: Zustand (this store)
+ * - Form state: React Hook Form + Zod
+ * - URL state: next/navigation useSearchParams
+ * - Component state: useState/useReducer
+ *
+ * Transient, per-component UI state (e.g. whether a single dropdown is open,
+ * hover/focus flags, local input drafts) should stay in `useState`/`useReducer`
+ * within the component and must NOT be promoted to this global store.
+ */
+
 type ModalName = 'connectWallet' | 'createVault' | 'claimVesting';
 
 type UiState = {

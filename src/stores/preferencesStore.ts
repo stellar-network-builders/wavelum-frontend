@@ -31,6 +31,14 @@ const defaultPreferences = {
   notifications: defaultNotifications,
 };
 
+/**
+ * Client-only preferences store (Zustand).
+ *
+ * Holds user UI preferences only: currency display, date format, and
+ * notification toggles. Server-derived data must live in TanStack Query,
+ * never here. See docs/STATE_MANAGEMENT.md for the state management
+ * decision tree and conventions.
+ */
 export const usePreferencesStore = create<PreferencesState>()(
   persist(
     (set) => ({

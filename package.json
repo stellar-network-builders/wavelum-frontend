@@ -9,6 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "lint:strict": "eslint --max-warnings 0",
+    "lint:ci": "eslint --max-warnings 0",
+    "lint:state": "eslint src --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest --project=unit",
